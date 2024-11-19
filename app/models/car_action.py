@@ -1,4 +1,4 @@
-from sqlalchemy import String, ForeignKey, DateTime
+from sqlalchemy import String, ForeignKey, DateTime, BLOB
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
@@ -17,6 +17,9 @@ class Car_Action(Base):
     action: Mapped[str] = mapped_column(String(50))  # e.g., 'Changed brakes'
     details: Mapped[str] = mapped_column(
         String(200), nullable=True)  # Additional info
+    service_station_name: Mapped[str] = mapped_column(
+        String(50), nullable=True)
+    car_image: Mapped[BLOB] = mapped_column(BLOB, nullable=True, default=None)
     date: Mapped[DateTime] = mapped_column(
         DateTime, default=datetime.utcnow)  # Use callable
     car = relationship("Car", back_populates="actions")

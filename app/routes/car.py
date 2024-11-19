@@ -8,27 +8,6 @@ from ..models import Car, Car_Action
 
 
 def car_routes(app: Flask):
-    @app.route('/add_car', methods=['POST'])
-    def add_car():
-        data = request.get_json()
-        name = data.get('name')
-        model = data.get('model')
-        plate_number = data.get('plate_number')
-        year = data.get('year')
-
-        session = Session()
-
-        try:
-            new_car = Car(name=name, model=model, year=year,
-                          plate_number=plate_number)
-            session.add(new_car)
-            session.commit()
-            return jsonify({'message': 'Car added successfully'})
-        except Exception as e:
-            session.rollback()
-            return jsonify({'error': str(e)}), 500
-        finally:
-            session.close()
 
     @app.route('/cars', methods=['GET'])
     def get_cars():
@@ -54,6 +33,28 @@ def car_routes(app: Flask):
                     ]
                 })
             return jsonify(result)
+        finally:
+            session.close()
+
+    @app.route('/car/add', methods=['POST'])
+    def add_car():
+        data = request.get_json()
+        name = data.get('name')
+        model = data.get('model')
+        plate_number = data.get('plate_number')
+        year = data.get('year')
+
+        session = Session()
+
+        try:
+            new_car = Car(name=name, model=model, year=year,
+                          plate_number=plate_number)
+            session.add(new_car)
+            session.commit()
+            return jsonify({'message': 'Car added successfully'})
+        except Exception as e:
+            session.rollback()
+            return jsonify({'error': str(e)}), 500
         finally:
             session.close()
 

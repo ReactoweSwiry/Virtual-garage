@@ -5,15 +5,25 @@ from datetime import datetime
 from ..database import Session
 
 from ..models import Car, Car_Action
+from ..utils import read_data_from_img
 
 
 def car_action_routes(app: Flask):
-    @app.route('/add_action/<int:car_id>', methods=['POST'])
+
+    @app.route('/action/autocomplete_from_image', methods=['POST'])
+    def autocomplete_from_image():
+        car_action_image = request.files['file']
+        text = read_data_from_img(car_action_image)
+
+        return text
+
+    @app.route('/action/add/<int:car_id>', methods=['POST'])
     def add_action(car_id):
         data = request.get_json()
         action = data.get('action')
         details = data.get('details')
-        date = data.get('date')  # Optional
+        service_station_name = data.get('service_station_name')
+        date = data.get('date')
 
         session = Session()
 
@@ -24,6 +34,7 @@ def car_action_routes(app: Flask):
                 car_id=car.id,
                 action=action,
                 details=details,
+                service_station_name=service_station_name,
                 date=datetime.strptime(
                     date, '%Y-%m-%d %H:%M:%S') if date else datetime.utcnow()
             )
