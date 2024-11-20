@@ -13,9 +13,9 @@ def car_action_routes(app: Flask):
     @app.route('/action/autocomplete_from_image', methods=['POST'])
     def autocomplete_from_image():
         car_action_image = request.files['file']
-        text = read_data_from_img(car_action_image)
+        output = read_data_from_img(car_action_image)
 
-        return text
+        return output
 
     @app.route('/action/add/<int:car_id>', methods=['POST'])
     def add_action(car_id):
@@ -24,6 +24,8 @@ def car_action_routes(app: Flask):
         details = data.get('details')
         service_station_name = data.get('service_station_name')
         date = data.get('date')
+
+        # Add image from form/state (?)
 
         session = Session()
 
