@@ -1,6 +1,8 @@
-import { Image, StyleSheet, Platform, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 import ParallaxScrollView from '@/components/ParallaxScrollView';
+import CarCard from '../components/CarCard';
+import AddCarCard from '../components/AddCarCard';
 
 export default function Garage() {
 	return (
@@ -13,21 +15,18 @@ export default function Garage() {
 				/>
 			}>
 			<View style={styles.titleContainer}>
-				<Text>Welcome!</Text>
+				<Text style={styles.title}>Welcome to your virtual garage!</Text>
+				<Text style={styles.description}>Here is your collection of cars</Text>
 			</View>
-			<View style={styles.stepContainer}>
-				<Text>Step 1: Try it</Text>
-				<Text>
-					Edit <Text>app/(tabs)/index.tsx</Text> to see changes. Press{' '}
-					<Text>
-						{Platform.select({
-							ios: 'cmd + d',
-							android: 'cmd + m',
-							web: 'F12',
-						})}
-					</Text>{' '}
-					to open developer tools.
-				</Text>
+			<View style={styles.content}>
+				{[1, 2].map((index) => (
+					<View
+						key={index}
+						style={styles.card}>
+						<CarCard carNo={index} />
+					</View>
+				))}
+				<AddCarCard />
 			</View>
 		</ParallaxScrollView>
 	);
@@ -35,19 +34,31 @@ export default function Garage() {
 
 const styles = StyleSheet.create({
 	titleContainer: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 8,
+		flexDirection: 'column',
+		gap: 4,
 	},
-	stepContainer: {
-		gap: 8,
-		marginBottom: 8,
+	title: {
+		fontSize: 16,
+		fontWeight: 'bold',
+	},
+	description: {
+		fontSize: 14,
+		fontWeight: 300,
+	},
+	content: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		justifyContent: 'space-between',
+		paddingTop: 8,
+		paddingBottom: 4,
+	},
+	card: {
+		paddingBottom: 12,
 	},
 	reactLogo: {
 		height: 178,
 		width: 290,
 		bottom: 0,
 		left: 0,
-		position: 'absolute',
 	},
 });
