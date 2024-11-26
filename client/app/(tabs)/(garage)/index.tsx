@@ -1,8 +1,8 @@
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 import ParallaxScrollView from '@/components/ParallaxScrollView';
-import CarCard from '../components/CarCard';
-import AddCarCard from '../components/AddCarCard';
+import CarCard from './components/CarCard';
+import AddCarCard from './components/AddCarCard';
 
 export default function Garage() {
 	return (

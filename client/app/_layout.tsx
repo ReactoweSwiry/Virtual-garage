@@ -6,7 +6,7 @@ export default function RootLayout() {
 	return (
 		<ThemeProvider value={DefaultTheme}>
 			<Stack screenOptions={{ headerShown: false }}>
-				<Stack.Screen name='tabs' />
+				<Stack.Screen name='(tabs)' />
 				<Stack.Screen name='+not-found' />
 			</Stack>
 			<StatusBar style='auto' />

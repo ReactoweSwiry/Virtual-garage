@@ -1,8 +1,8 @@
 import { Image, StyleSheet, Text, View } from 'react-native';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 
-import SettingsSection from '../components/SettingsSection';
-import SettingItem from '../components/SettingsItem';
+import SettingsSection from './components/SettingsSection';
+import SettingItem from './components/SettingsItem';
 
 export default function Settings() {
 	return (
