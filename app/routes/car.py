@@ -3,7 +3,6 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from ..database import Session
 from ..utils import convert_blob_to_base64
-
 from ..models import Car, Car_Action
 
 
@@ -15,22 +14,20 @@ def car_routes(app: Flask):
         try:
             cars = session.query(Car).all()
             result = []
+
             for car in cars:
+                car_image = None
+
+                if isinstance(car.car_image, (bytes, bytearray)):
+                    car_image = convert_blob_to_base64(car.car_image)
+
                 result.append({
                     'id': car.id,
                     'name': car.name,
                     'model': car.model,
                     'plate_number': car.plate_number,
                     'year': car.year,
-                    'actions': [
-                        {
-                            'id': action.id,
-                            'action': action.action,
-                            'details': action.details,
-                            'date': action.date.strftime('%Y-%m-%d %H:%M:%S')
-                        }
-                        for action in car.actions
-                    ]
+                    'car_image': car_image
                 })
             return jsonify(result)
         finally:
