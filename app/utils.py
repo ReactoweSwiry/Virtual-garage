@@ -12,8 +12,7 @@ OPEN_ROUTER_API_KEY = os.environ.get("OPEN_ROUTER_API_KEY")
 
 
 def convert_blob_to_base64(blob):
-    base64_encoded = base64.b64encode(blob).decode('utf-8')
-    return base64_encoded
+    return base64.b64encode(blob).decode('utf-8')
 
 
 def convert_llm_output_to_json(text):
