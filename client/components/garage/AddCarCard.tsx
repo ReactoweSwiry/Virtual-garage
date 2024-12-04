@@ -1,3 +1,4 @@
+import { Link } from 'expo-router';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 
 const { width } = Dimensions.get('window');
@@ -5,9 +6,11 @@ const cardWidth = (width - 48) / 2; // 48 = padding (16) * 2 + gap between cards
 
 export default function AddCarCard() {
 	return (
-		<View style={styles.card}>
-			<Text style={styles.cardText}>+</Text>
-		</View>
+		<Link href='/new-car'>
+			<View style={styles.card}>
+				<Text style={styles.cardText}>+</Text>
+			</View>
+		</Link>
 	);
 }
 

@@ -5,7 +5,8 @@ import {
 	Dimensions,
 	ImageBackground,
 } from 'react-native';
-import { Car } from '../shared/types';
+
+import { Car } from '@/shared/types';
 
 const { width } = Dimensions.get('window');
 const cardWidth = (width - 48) / 2; // 48 = padding (16) * 2 + gap between cards (16)

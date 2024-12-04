@@ -5,9 +5,9 @@ import axios from 'axios';
 import { FLASK_API_DEV } from '@/constants/api';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 
-import CarCard from './components/CarCard';
-import AddCarCard from './components/AddCarCard';
-import { Car } from './shared/types';
+import CarCard from '@/components/garage/CarCard';
+import AddCarCard from '@/components/garage/AddCarCard';
+import { Car } from '@/shared/types';
 
 export default function Garage() {
 	const {
