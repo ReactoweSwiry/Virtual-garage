@@ -1,3 +1,5 @@
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,11 +16,13 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 
 import styles from '@/styles/garage/new-car';
+import { FLASK_API_DEV } from '@/constants/api';
+import PickImageModal from '@/components/garage/PickImageModal';
 
 const carFormSchema = z.object({
 	name: z.string().min(3, 'Atleast 3 characters long').max(25),
-	model: z.string().min(4, 'Atleast 4 characters long').max(30),
-	car_plate: z.string().min(4, 'Minimum 4 characters').max(10),
+	model: z.string().min(3, 'Atleast 4 characters long').max(30),
+	plate_number: z.string().min(4, 'Minimum 4 characters').max(10),
 	year: z
 		.number()
 		.int()
@@ -27,6 +31,13 @@ const carFormSchema = z.object({
 });
 
 export default function NewCar() {
+	const { mutate, isPending, isError, error } = useMutation({
+		mutationKey: ['Cars'],
+		mutationFn: async (data: z.infer<typeof carFormSchema>) => {
+			await axios.post(`${FLASK_API_DEV}/car/add`, data);
+		},
+	});
+
 	const {
 		control,
 		handleSubmit,
@@ -36,13 +47,13 @@ export default function NewCar() {
 		defaultValues: {
 			name: '',
 			model: '',
-			car_plate: '',
-			year: 2023,
+			plate_number: '',
+			year: new Date().getFullYear(),
 		},
 	});
 
 	const onSubmit = (data: z.infer<typeof carFormSchema>) => {
-		console.log('Form Data:', data);
+		mutate(data);
 	};
 
 	return (
@@ -72,8 +83,9 @@ export default function NewCar() {
 					<View style={styles.divider} />
 				</View>
 				<Text style={styles.additionalText}>
-					We will pick an icon that fits to the type of your vehicle!
+					Choose one of our icons that fits your car!
 				</Text>
+				<PickImageModal />
 				<Controller
 					control={control}
 					name='name'
@@ -136,29 +148,32 @@ export default function NewCar() {
 				/>
 				<Controller
 					control={control}
-					name='car_plate'
+					name='plate_number'
 					render={({ field: { onChange, onBlur, value } }) => (
 						<View style={styles.inputContainer}>
 							<Text style={styles.label}>Car plate</Text>
 							<TextInput
-								style={[styles.input, errors.car_plate && styles.inputError]}
+								style={[styles.input, errors.plate_number && styles.inputError]}
 								onBlur={onBlur}
 								onChangeText={onChange}
 								value={value}
 								placeholder='WZW 91230'
 							/>
-							{errors.car_plate && (
-								<Text style={styles.errorText}>{errors.car_plate.message}</Text>
+							{errors.plate_number && (
+								<Text style={styles.errorText}>
+									{errors.plate_number.message}
+								</Text>
 							)}
 						</View>
 					)}
 				/>
 				<View style={styles.buttonContainer}>
 					<Button
-						title='Add new car'
+						title={isPending ? 'Saving your new car...' : 'Add a new car'}
 						onPress={handleSubmit(onSubmit)}
 					/>
 				</View>
+				{isError && <Text style={styles.errorText}>{error.message}</Text>}
 			</View>
 		</ParallaxScrollView>
 	);

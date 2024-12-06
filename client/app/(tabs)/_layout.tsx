@@ -2,8 +2,8 @@ import { Platform } from 'react-native';
 import { Tabs } from 'expo-router';
 
 import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function TabLayout() {
 	return (
@@ -24,10 +24,10 @@ export default function TabLayout() {
 				name='(garage)'
 				options={{
 					title: '',
-					tabBarIcon: ({ color }) => (
-						<IconSymbol
-							name='house.fill'
-							color={color}
+					tabBarIcon: () => (
+						<MaterialIcons
+							name='house'
+							size={28}
 							style={{ paddingTop: 8 }}
 						/>
 					),
@@ -37,10 +37,10 @@ export default function TabLayout() {
 				name='settings'
 				options={{
 					title: '',
-					tabBarIcon: ({ color }) => (
-						<IconSymbol
-							name='settings.fill' // @ts-ignore
-							color={color}
+					tabBarIcon: () => (
+						<MaterialIcons
+							name='settings'
+							size={28}
 							style={{ paddingTop: 8 }}
 						/>
 					),
