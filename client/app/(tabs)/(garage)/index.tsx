@@ -1,10 +1,11 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, Text, View } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
 import { FLASK_API_DEV } from '@/constants/api';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
+import styles from '@/styles/garage/car';
 
+import ParallaxScrollView from '@/components/ParallaxScrollView';
 import CarCard from '@/components/garage/CarCard';
 import AddCarCard from '@/components/garage/AddCarCard';
 import { Car } from '@/shared/types';
@@ -55,34 +56,3 @@ export default function Garage() {
 		</ParallaxScrollView>
 	);
 }
-
-const styles = StyleSheet.create({
-	titleContainer: {
-		flexDirection: 'column',
-		gap: 4,
-	},
-	title: {
-		fontSize: 16,
-		fontWeight: 'bold',
-	},
-	description: {
-		fontSize: 14,
-		fontWeight: 300,
-	},
-	content: {
-		flexDirection: 'row',
-		flexWrap: 'wrap',
-		justifyContent: 'space-between',
-		paddingTop: 8,
-		paddingBottom: 4,
-	},
-	card: {
-		paddingBottom: 12,
-	},
-	reactLogo: {
-		height: 178,
-		width: 290,
-		bottom: 0,
-		left: 0,
-	},
-});

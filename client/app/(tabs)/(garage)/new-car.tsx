@@ -1,28 +1,50 @@
+import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import {
 	View,
 	Text,
 	TextInput,
-	StyleSheet,
 	Image,
 	TouchableOpacity,
-	Alert,
+	Button,
 } from 'react-native';
-import * as DocumentPicker from 'expo-document-picker';
 import { MaterialIcons } from '@expo/vector-icons';
 
-import Button from '@/components/ui/Button';
+import styles from '@/styles/garage/new-car';
 
-async function PickFile() {
-	try {
-		const result = await DocumentPicker.getDocumentAsync({});
-		console.log(result);
-	} catch (err) {
-		Alert.alert('Error', 'Failed to pick a file');
-	}
-}
+const carFormSchema = z.object({
+	name: z.string().min(3, 'Atleast 3 characters long').max(25),
+	model: z.string().min(4, 'Atleast 4 characters long').max(30),
+	car_plate: z.string().min(4, 'Minimum 4 characters').max(10),
+	year: z
+		.number()
+		.int()
+		.min(1970)
+		.refine((val) => `${val}`.length == 4, 'Year can only have 4 digits'),
+});
 
 export default function NewCar() {
+	const {
+		control,
+		handleSubmit,
+		formState: { errors },
+	} = useForm({
+		resolver: zodResolver(carFormSchema),
+		defaultValues: {
+			name: '',
+			model: '',
+			car_plate: '',
+			year: 2023,
+		},
+	});
+
+	const onSubmit = (data: z.infer<typeof carFormSchema>) => {
+		console.log('Form Data:', data);
+	};
+
 	return (
 		<ParallaxScrollView
 			headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -36,9 +58,7 @@ export default function NewCar() {
 				</Text>
 			</View>
 			<View style={styles.container}>
-				<TouchableOpacity
-					style={styles.fileUpload}
-					onPress={PickFile}>
+				<TouchableOpacity style={styles.fileUpload}>
 					<MaterialIcons
 						name='upload-file'
 						size={40}
@@ -52,86 +72,94 @@ export default function NewCar() {
 					<View style={styles.divider} />
 				</View>
 				<Text style={styles.additionalText}>
-					We will pick an icon that correspondts to the type of your vehicle!
+					We will pick an icon that fits to the type of your vehicle!
 				</Text>
-				<TextInput
-					style={styles.input}
-					placeholder='Name'
+				<Controller
+					control={control}
+					name='name'
+					render={({ field: { onChange, onBlur, value } }) => (
+						<View style={styles.inputContainer}>
+							<Text style={styles.label}>Name</Text>
+							<TextInput
+								style={[styles.input, errors.name && styles.inputError]}
+								onBlur={onBlur}
+								onChangeText={onChange}
+								value={value}
+								placeholder='Opel'
+							/>
+							{errors.name && (
+								<Text style={styles.errorText}>{errors.name.message}</Text>
+							)}
+						</View>
+					)}
 				/>
-				<TextInput
-					style={styles.input}
-					placeholder='Model'
+				<Controller
+					control={control}
+					name='model'
+					render={({ field: { onChange, onBlur, value } }) => (
+						<View style={styles.inputContainer}>
+							<Text style={styles.label}>Model</Text>
+							<TextInput
+								style={[styles.input, errors.model && styles.inputError]}
+								onBlur={onBlur}
+								onChangeText={onChange}
+								value={value}
+								placeholder='Astra'
+							/>
+							{errors.model && (
+								<Text style={styles.errorText}>{errors.model.message}</Text>
+							)}
+						</View>
+					)}
 				/>
-				<TextInput
-					style={styles.input}
-					placeholder='Year'
-					keyboardType='numeric'
+				<Controller
+					control={control}
+					name='year'
+					render={({ field: { onChange, onBlur, value } }) => (
+						<View style={styles.inputContainer}>
+							<Text style={styles.label}>Year</Text>
+							<TextInput
+								style={[styles.input, errors.year && styles.inputError]}
+								keyboardType='numeric'
+								onBlur={onBlur}
+								onChangeText={(text) =>
+									onChange(text ? parseInt(text, 10) : '')
+								}
+								value={value ? value.toString() : ''}
+								placeholder='2011'
+							/>
+							{errors.year && (
+								<Text style={styles.errorText}>{errors.year.message}</Text>
+							)}
+						</View>
+					)}
 				/>
-				<Button title='Save' />
+				<Controller
+					control={control}
+					name='car_plate'
+					render={({ field: { onChange, onBlur, value } }) => (
+						<View style={styles.inputContainer}>
+							<Text style={styles.label}>Car plate</Text>
+							<TextInput
+								style={[styles.input, errors.car_plate && styles.inputError]}
+								onBlur={onBlur}
+								onChangeText={onChange}
+								value={value}
+								placeholder='WZW 91230'
+							/>
+							{errors.car_plate && (
+								<Text style={styles.errorText}>{errors.car_plate.message}</Text>
+							)}
+						</View>
+					)}
+				/>
+				<View style={styles.buttonContainer}>
+					<Button
+						title='Add new car'
+						onPress={handleSubmit(onSubmit)}
+					/>
+				</View>
 			</View>
 		</ParallaxScrollView>
 	);
 }
-
-const styles = StyleSheet.create({
-	titleContainer: {
-		flexDirection: 'column',
-		gap: 4,
-	},
-	title: {
-		fontSize: 16,
-		fontWeight: 'bold',
-	},
-	description: {
-		fontSize: 14,
-		fontWeight: 300,
-	},
-	container: {
-		flex: 1,
-		padding: 20,
-		justifyContent: 'center',
-	},
-	fileUpload: {
-		borderWidth: 2,
-		borderColor: '#007bff',
-		borderStyle: 'dashed',
-		borderRadius: 5,
-		padding: 20,
-		marginBottom: 15,
-		alignItems: 'center',
-	},
-	fileUploadText: {
-		color: '#007bff',
-		fontSize: 14,
-		fontWeight: 'semibold',
-	},
-	dividerContainer: {
-		flexDirection: 'row',
-		alignItems: 'center',
-	},
-	divider: {
-		flex: 1,
-		height: 1,
-		backgroundColor: 'black',
-		opacity: 0.25,
-	},
-	dividerText: {
-		paddingHorizontal: 10,
-		opacity: 0.5,
-		fontSize: 14,
-	},
-	additionalText: {
-		fontSize: 14,
-		textAlign: 'center',
-		opacity: 0.75,
-		paddingVertical: 20,
-	},
-	input: {
-		padding: 10,
-		borderRadius: 5,
-		marginBottom: 15,
-	},
-	button: {
-		textTransform: 'capitalize',
-	},
-});

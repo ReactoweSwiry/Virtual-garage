@@ -23,11 +23,12 @@ export default function TabLayout() {
 			<Tabs.Screen
 				name='(garage)'
 				options={{
-					title: 'Garage',
+					title: '',
 					tabBarIcon: ({ color }) => (
 						<IconSymbol
 							name='house.fill'
 							color={color}
+							style={{ paddingTop: 8 }}
 						/>
 					),
 				}}
@@ -35,11 +36,12 @@ export default function TabLayout() {
 			<Tabs.Screen
 				name='settings'
 				options={{
-					title: 'Settings',
+					title: '',
 					tabBarIcon: ({ color }) => (
 						<IconSymbol
-							name='star.fill' //Change to settings
+							name='settings.fill' // @ts-ignore
 							color={color}
+							style={{ paddingTop: 8 }}
 						/>
 					),
 				}}
