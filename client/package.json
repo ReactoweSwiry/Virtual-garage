@@ -3,7 +3,9 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start",
+    "start": "concurrently \"npm run dev\" \"npm run fastapi\" ",
+    "fastapi": "cd ../app && flask run",
+    "dev": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
@@ -23,6 +25,7 @@
     "@tanstack/react-query": "^5.62.0",
     "axios": "^1.7.8",
     "client": "file:",
+    "concurrently": "^9.1.2",
     "expo": "~52.0.7",
     "expo-blur": "~14.0.1",
     "expo-constants": "~17.0.3",
