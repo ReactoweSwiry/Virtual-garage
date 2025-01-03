@@ -1,31 +1,23 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 
 import SettingItem from '@/components/settings/SettingsItem';
 import SettingsSection from '@/components/settings/SettingsSection';
+import { Link } from 'expo-router';
+
+
 
 export default function Settings() {
 	return (
-		<ParallaxScrollView
-			headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-			headerImage={
-				<Image
-					source={require('@/assets/images/partial-react-logo.png')}
-					style={styles.reactLogo}
-				/>
-			}>
-			<View style={styles.titleContainer}>
-				<Text style={styles.title}>Settings</Text>
-				<Text style={styles.description}>
-					Here is your settings panel, tweak it as you like.
-				</Text>
-			</View>
+		<ScrollView style={styles.container}>
 
 			<SettingsSection title='Account'>
-				<SettingItem
-					icon='person-circle'
-					title='Profile'
-				/>
+				<Link href='/settings/profile'>
+					<SettingItem
+						icon='person-circle'
+						title='Profile'
+					/>
+				</Link>
 				<SettingItem
 					icon='notifications'
 					title='Notifications'
@@ -72,11 +64,15 @@ export default function Settings() {
 					title='Version'
 				/>
 			</SettingsSection>
-		</ParallaxScrollView>
+		</ScrollView>
 	);
 }
 
 const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		padding: 16,
+	},
 	titleContainer: {
 		flexDirection: 'column',
 		gap: 4,

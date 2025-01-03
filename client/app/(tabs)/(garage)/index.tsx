@@ -50,7 +50,7 @@ export default function Garage() {
 				)}
 				{!isLoading && <AddCarCard />}
 				{error && (
-					<Text>Error occured while preparing vehicles for you :(</Text>
+					<Text>Error occured while preparing vehicles for you :</Text>
 				)}
 			</View>
 		</ParallaxScrollView>
