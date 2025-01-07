@@ -131,9 +131,7 @@ const RootLayoutNav = () => {
             ),
           }}
         >
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="drawer" options={{ headerShown: false }} />
           <Stack.Screen
             name="search"
             options={{ title: Locales.t('search') }}

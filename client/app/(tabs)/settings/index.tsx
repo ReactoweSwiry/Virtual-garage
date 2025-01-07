@@ -9,6 +9,7 @@ import {
   IconButton,
   Snackbar,
   Icon,
+  Text,
 } from 'react-native-paper';
 
 import {
@@ -18,7 +19,6 @@ import {
   Languages,
   LoadingIndicator,
   Locales,
-  ScreenInfo,
   Setting,
   styles,
 } from '@/lib';
@@ -283,10 +283,7 @@ const Settings = () => {
       )}
 
       <Surface elevation={0} style={styles.screen}>
-        <ScreenInfo
-          title={Locales.t('titleSettings')}
-          path="app/(tabs)/settings.tsx"
-        />
+        <Text variant="bodyMedium">Here add rest of the settings</Text>
       </Surface>
 
       <Button

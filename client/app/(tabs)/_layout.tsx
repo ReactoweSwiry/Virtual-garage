@@ -1,13 +1,10 @@
+import { Appbar, Tooltip } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs, router } from 'expo-router';
-import React from 'react';
-import { Appbar, Menu, Tooltip } from 'react-native-paper';
 
 import { Locales, TabBar, TabsHeader } from '@/lib';
 
 const TabLayout = () => {
-  const [visible, setVisible] = React.useState(false);
-
   return (
     <Tabs
       tabBar={(props) => <TabBar {...props} />}
@@ -30,35 +27,6 @@ const TabLayout = () => {
                   onPress={() => router.push('/search')}
                 />
               </Tooltip>
-              <Menu
-                statusBarHeight={48}
-                visible={visible}
-                onDismiss={() => setVisible(false)}
-                anchor={
-                  <Tooltip title={Locales.t('options')}>
-                    <Appbar.Action
-                      icon="dots-vertical"
-                      onPress={() => setVisible(true)}
-                    />
-                  </Tooltip>
-                }
-              >
-                <Menu.Item
-                  title={Locales.t('titleSettings')}
-                  leadingIcon="cog"
-                  onPress={() => router.push('/(tabs)/settings')}
-                />
-                <Menu.Item
-                  title={Locales.t('stackNav')}
-                  leadingIcon="card-multiple-outline"
-                  onPress={() => router.push('/modal')}
-                />
-                <Menu.Item
-                  title={Locales.t('drawerNav')}
-                  leadingIcon="gesture-swipe"
-                  onPress={() => router.push('/drawer')}
-                />
-              </Menu>
             </>
           ),
           tabBarIcon: (props) => (
@@ -82,12 +50,6 @@ const TabLayout = () => {
                   onPress={() => router.push('/search')}
                 />
               </Tooltip>
-              <Tooltip title={Locales.t('titleSettings')}>
-                <Appbar.Action
-                  icon="cog"
-                  onPress={() => router.push('/(tabs)/settings')}
-                />
-              </Tooltip>
             </>
           ),
           tabBarIcon: (props) => (
@@ -103,14 +65,6 @@ const TabLayout = () => {
         name="settings"
         options={{
           title: Locales.t('titleSettings'),
-          headerRight: () => (
-            <Tooltip title={Locales.t('drawerNav')}>
-              <Appbar.Action
-                icon="gesture-swipe"
-                onPress={() => router.push('/drawer')}
-              />
-            </Tooltip>
-          ),
           tabBarIcon: (props) => (
             <MaterialCommunityIcons
               {...props}

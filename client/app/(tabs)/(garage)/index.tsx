@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   AnimatedFAB,
 } from 'react-native-paper';
+import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 
 import { getCars } from '@/lib/api/queries';
@@ -68,7 +69,7 @@ export default function Garage() {
         icon={'plus'}
         label={'Label'}
         extended={false}
-        onPress={() => console.log('Pressed')}
+        onPress={() => router.push('/new-car')}
         animateFrom={'right'}
         iconMode={'static'}
         style={styles.fab}

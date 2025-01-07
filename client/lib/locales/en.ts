@@ -23,6 +23,7 @@ const English = {
   changeScreenCode:
     'Change any of the text, save the file, and your app will automatically update',
   garageTitleText: 'Here is the collection of your cars',
+  addNewCarToGarage: 'Add new to car',
   goHome: 'Go to home screen',
   openScreenCode: 'Open up the code for this screen',
   save: 'Save',
