@@ -1,32 +1,21 @@
-import { Link, Stack } from 'expo-router';
-import { Fragment } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { Link, Stack } from 'expo-router'
+import React from 'react'
+import { Surface, Text } from 'react-native-paper'
 
-export default function NotFoundScreen() {
-	return (
-		<Fragment>
-			<Stack.Screen options={{ title: 'Oops!' }} />
-			<View style={styles.container}>
-				<Text>This screen doesn't exist.</Text>
-				<Link
-					href='/'
-					style={styles.link}>
-					<Text>Go to home screen!</Text>
-				</Link>
-			</View>
-		</Fragment>
-	);
-}
+import { Locales, styles } from '@/lib'
 
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		alignItems: 'center',
-		justifyContent: 'center',
-		padding: 20,
-	},
-	link: {
-		marginTop: 15,
-		paddingVertical: 15,
-	},
-});
+const NotFound = () => (
+  <Surface style={styles.screen}>
+    <Stack.Screen options={{ title: Locales.t('titleNotFound') }} />
+
+    <Text variant="displayLarge">{Locales.t('titleNotFound')}</Text>
+
+    <Text variant="bodyLarge">{Locales.t('screen404')}</Text>
+
+    <Link href="/">
+      <Text variant="bodyLarge">{Locales.t('goHome')}</Text>
+    </Link>
+  </Surface>
+)
+
+export default NotFound

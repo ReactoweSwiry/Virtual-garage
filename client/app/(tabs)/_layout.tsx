@@ -1,51 +1,125 @@
-import { Platform } from 'react-native';
-import { Tabs } from 'expo-router';
+import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { Tabs, router } from 'expo-router'
+import React from 'react'
+import { Appbar, Menu, Tooltip } from 'react-native-paper'
 
-import { HapticTab } from '@/components/HapticTab';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Locales, TabBar, TabsHeader } from '@/lib'
 
-export default function TabLayout() {
-	return (
-		<Tabs
-			screenOptions={{
-				tabBarActiveTintColor: 'light',
-				headerShown: false,
-				tabBarButton: HapticTab,
-				tabBarBackground: TabBarBackground,
-				tabBarStyle: Platform.select({
-					ios: {
-						position: 'absolute',
-					},
-					default: {},
-				}),
-			}}>
-			<Tabs.Screen
-				name='(garage)'
-				options={{
-					title: '',
-					tabBarIcon: () => (
-						<MaterialIcons
-							name='house'
-							size={28}
-							style={{ paddingTop: 8 }}
-						/>
-					),
-				}}
-			/>
-			<Tabs.Screen
-				name='settings'
-				options={{
-					title: '',
-					tabBarIcon: () => (
-						<MaterialIcons
-							name='settings'
-							size={28}
-							style={{ paddingTop: 8 }}
-						/>
-					),
-				}}
-			/>
-		</Tabs>
-	);
+const TabLayout = () => {
+  const [visible, setVisible] = React.useState(false)
+
+  return (
+    <Tabs
+      tabBar={(props) => <TabBar {...props} />}
+      screenOptions={{
+        tabBarHideOnKeyboard: true,
+        header: (props) => <TabsHeader navProps={props} children={undefined} />,
+      }}
+    >
+      <Tabs.Screen
+        name="(garage)"
+        options={{
+          title: Locales.t('titleGarage'),
+          headerRight: () => (
+            <>
+              <Tooltip title={Locales.t('search')}>
+                <Appbar.Action
+                  icon="magnify"
+                  onPress={() => router.push('/search')}
+                />
+              </Tooltip>
+              <Menu
+                statusBarHeight={48}
+                visible={visible}
+                onDismiss={() => setVisible(false)}
+                anchor={
+                  <Tooltip title={Locales.t('options')}>
+                    <Appbar.Action
+                      icon="dots-vertical"
+                      onPress={() => setVisible(true)}
+                    />
+                  </Tooltip>
+                }
+              >
+                <Menu.Item
+                  title={Locales.t('titleSettings')}
+                  leadingIcon="cog"
+                  onPress={() => router.push('/(tabs)/settings')}
+                />
+                <Menu.Item
+                  title={Locales.t('stackNav')}
+                  leadingIcon="card-multiple-outline"
+                  onPress={() => router.push('/modal')}
+                />
+                <Menu.Item
+                  title={Locales.t('drawerNav')}
+                  leadingIcon="gesture-swipe"
+                  onPress={() => router.push('/drawer')}
+                />
+              </Menu>
+            </>
+          ),
+          tabBarIcon: (props) => (
+            <MaterialCommunityIcons
+              {...props}
+              size={24}
+              name={props.focused ? 'home' : 'home-outline'}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: Locales.t('profile'),
+          headerRight: () => (
+            <>
+              <Tooltip title={Locales.t('search')}>
+                <Appbar.Action
+                  icon="magnify"
+                  onPress={() => router.push('/search')}
+                />
+              </Tooltip>
+              <Tooltip title={Locales.t('titleSettings')}>
+                <Appbar.Action
+                  icon="cog"
+                  onPress={() => router.push('/(tabs)/settings')}
+                />
+              </Tooltip>
+            </>
+          ),
+          tabBarIcon: (props) => (
+            <MaterialCommunityIcons
+              {...props}
+              size={24}
+              name={props.focused ? 'account' : 'account-outline'}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: Locales.t('titleSettings'),
+          headerRight: () => (
+            <Tooltip title={Locales.t('drawerNav')}>
+              <Appbar.Action
+                icon="gesture-swipe"
+                onPress={() => router.push('/drawer')}
+              />
+            </Tooltip>
+          ),
+          tabBarIcon: (props) => (
+            <MaterialCommunityIcons
+              {...props}
+              size={24}
+              name={props.focused ? 'cog' : 'cog-outline'}
+            />
+          ),
+        }}
+      />
+    </Tabs>
+  )
 }
+
+export default TabLayout
