@@ -43,6 +43,6 @@ const Turkish = {
   lime: 'limon yeşili',
   olive: 'zeytin yeşili',
   brown: 'kahverengi',
-}
+};
 
-export default Turkish
+export default Turkish;

@@ -2,10 +2,10 @@
  * Styles
  */
 
-import { StyleSheet } from 'react-native'
+import { StyleSheet } from 'react-native';
 
-import Colors from '@/lib/ui/styles/colors'
-import Themes from '@/lib/ui/styles/themes'
+import Colors from '@/lib/ui/styles/colors';
+import Themes from '@/lib/ui/styles/themes';
 
 const styles = StyleSheet.create({
   screen: {
@@ -15,6 +15,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-})
+});
 
-export { Colors, Themes, styles }
+export { Colors, Themes, styles };

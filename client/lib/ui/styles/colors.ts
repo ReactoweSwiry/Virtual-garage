@@ -2,7 +2,7 @@
  * Custom colors for using with themes
  */
 
-import { MD3DarkTheme, MD3LightTheme } from 'react-native-paper'
+import { MD3DarkTheme, MD3LightTheme } from 'react-native-paper';
 
 const Colors = {
   light: {
@@ -941,6 +941,6 @@ const Colors = {
       backdrop: 'rgba(59, 45, 41, 0.4)',
     },
   },
-}
+};
 
-export default Colors
+export default Colors;

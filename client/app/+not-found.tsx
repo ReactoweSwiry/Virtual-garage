@@ -1,8 +1,8 @@
-import { Link, Stack } from 'expo-router'
-import React from 'react'
-import { Surface, Text } from 'react-native-paper'
+import { Link, Stack } from 'expo-router';
+import React from 'react';
+import { Surface, Text } from 'react-native-paper';
 
-import { Locales, styles } from '@/lib'
+import { Locales, styles } from '@/lib';
 
 const NotFound = () => (
   <Surface style={styles.screen}>
@@ -16,6 +16,6 @@ const NotFound = () => (
       <Text variant="bodyLarge">{Locales.t('goHome')}</Text>
     </Link>
   </Surface>
-)
+);
 
-export default NotFound
+export default NotFound;

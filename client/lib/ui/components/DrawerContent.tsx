@@ -1,12 +1,12 @@
-import { DrawerContentComponentProps } from '@react-navigation/drawer'
-import { router } from 'expo-router'
-import React from 'react'
-import { Drawer, DrawerSectionProps } from 'react-native-paper'
+import { DrawerContentComponentProps } from '@react-navigation/drawer';
+import { router } from 'expo-router';
+import React from 'react';
+import { Drawer, DrawerSectionProps } from 'react-native-paper';
 
-import { Locales } from '@/lib/locales'
+import { Locales } from '@/lib/locales';
 
 interface DrawerContentProps extends DrawerSectionProps {
-  navProps: DrawerContentComponentProps
+  navProps: DrawerContentComponentProps;
 }
 
 const DrawerContent = (props: DrawerContentProps) => (
@@ -35,6 +35,6 @@ const DrawerContent = (props: DrawerContentProps) => (
       onPress={() => router.push('/drawer/settings')}
     />
   </Drawer.Section>
-)
+);
 
-export default DrawerContent
+export default DrawerContent;

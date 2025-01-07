@@ -1,22 +1,22 @@
-import React from 'react'
-import { Searchbar, Surface } from 'react-native-paper'
+import React from 'react';
+import { Searchbar, Surface } from 'react-native-paper';
 
-import { Locales, ScreenInfo, styles } from '@/lib'
+import { Locales, ScreenInfo, styles } from '@/lib';
 
 const Search = () => {
-  const [query, setQuery] = React.useState('')
-  const [loading, setLoading] = React.useState(false)
+  const [query, setQuery] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
 
   // Search logic
   React.useEffect(() => {
     if (query !== '') {
-      setLoading(true)
+      setLoading(true);
     }
 
     setTimeout(() => {
-      setLoading(false)
-    }, 1000)
-  }, [query])
+      setLoading(false);
+    }, 1000);
+  }, [query]);
 
   return (
     <Surface style={{ flex: 1, gap: 16 }}>
@@ -32,7 +32,7 @@ const Search = () => {
         <ScreenInfo title={Locales.t('search')} path="app/search.tsx" />
       </Surface>
     </Surface>
-  )
-}
+  );
+};
 
-export default Search
+export default Search;

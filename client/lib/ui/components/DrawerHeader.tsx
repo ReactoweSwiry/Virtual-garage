@@ -1,6 +1,6 @@
-import { DrawerHeaderProps as BaseProps } from '@react-navigation/drawer'
-import { getHeaderTitle } from '@react-navigation/elements'
-import React from 'react'
+import { DrawerHeaderProps as BaseProps } from '@react-navigation/drawer';
+import { getHeaderTitle } from '@react-navigation/elements';
+import React from 'react';
 import {
   Appbar,
   AppbarProps,
@@ -8,16 +8,16 @@ import {
   Searchbar,
   SearchbarProps,
   Tooltip,
-} from 'react-native-paper'
+} from 'react-native-paper';
 
 interface DrawerHeaderProps extends AppbarProps {
-  navProps: BaseProps
-  withSearchBar?: boolean
-  searchBarProps?: SearchbarProps
+  navProps: BaseProps;
+  withSearchBar?: boolean;
+  searchBarProps?: SearchbarProps;
 }
 
 const DrawerHeader = (props: DrawerHeaderProps) => {
-  const [query, setQuery] = React.useState('')
+  const [query, setQuery] = React.useState('');
 
   return props.withSearchBar ? (
     <Appbar.Header {...props}>
@@ -55,7 +55,7 @@ const DrawerHeader = (props: DrawerHeaderProps) => {
       <Appbar.Content
         title={getHeaderTitle(
           props.navProps.options,
-          props.navProps.route.name,
+          props.navProps.route.name
         )}
       />
 
@@ -65,7 +65,7 @@ const DrawerHeader = (props: DrawerHeaderProps) => {
           })
         : undefined}
     </Appbar.Header>
-  )
-}
+  );
+};
 
-export default DrawerHeader
+export default DrawerHeader;

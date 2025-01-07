@@ -15,6 +15,6 @@ const Languages = {
     name: 'Turkish',
     nativeName: 'Türkçe',
   },
-}
+};
 
-export default Languages
+export default Languages;

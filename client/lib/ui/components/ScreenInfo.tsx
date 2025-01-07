@@ -1,8 +1,8 @@
-import { Chip, Text } from 'react-native-paper'
+import { Chip, Text } from 'react-native-paper';
 
-import { Locales } from '@/lib/locales'
+import { Locales } from '@/lib/locales';
 
-import GradientBackground from './GradientBackground'
+import GradientBackground from './GradientBackground';
 
 const ScreenInfo = (props: { title: string; path: string }) => (
   <>
@@ -20,6 +20,6 @@ const ScreenInfo = (props: { title: string; path: string }) => (
       {Locales.t('changeScreenCode')}
     </Text>
   </>
-)
+);
 
-export default ScreenInfo
+export default ScreenInfo;

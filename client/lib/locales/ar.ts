@@ -45,6 +45,6 @@ const Arabic = {
   lime: 'ليموني',
   olive: 'زيتوني',
   brown: 'بني',
-}
+};
 
-export default Arabic
+export default Arabic;

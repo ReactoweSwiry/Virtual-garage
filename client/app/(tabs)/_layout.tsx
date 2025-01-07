@@ -1,19 +1,21 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { Tabs, router } from 'expo-router'
-import React from 'react'
-import { Appbar, Menu, Tooltip } from 'react-native-paper'
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Tabs, router } from 'expo-router';
+import React from 'react';
+import { Appbar, Menu, Tooltip } from 'react-native-paper';
 
-import { Locales, TabBar, TabsHeader } from '@/lib'
+import { Locales, TabBar, TabsHeader } from '@/lib';
 
 const TabLayout = () => {
-  const [visible, setVisible] = React.useState(false)
+  const [visible, setVisible] = React.useState(false);
 
   return (
     <Tabs
       tabBar={(props) => <TabBar {...props} />}
       screenOptions={{
         tabBarHideOnKeyboard: true,
-        header: (props) => <TabsHeader navProps={props} children={undefined} />,
+        header: (props) => (
+          <TabsHeader navProps={props} children={undefined} />
+        ),
       }}
     >
       <Tabs.Screen
@@ -119,7 +121,7 @@ const TabLayout = () => {
         }}
       />
     </Tabs>
-  )
-}
+  );
+};
 
-export default TabLayout
+export default TabLayout;

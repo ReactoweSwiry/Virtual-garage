@@ -1,3 +1,3 @@
 export default function NewCar() {
-  return <div>New car</div>
+  return <div>New car</div>;
 }

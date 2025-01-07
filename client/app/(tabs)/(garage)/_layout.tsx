@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router'
+import { Stack } from 'expo-router';
 
 export default function GarageLayout() {
   return (
@@ -6,5 +6,5 @@ export default function GarageLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="new-car" />
     </Stack>
-  )
+  );
 }

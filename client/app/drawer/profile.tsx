@@ -1,12 +1,15 @@
-import { router } from 'expo-router'
-import React from 'react'
-import { Button, Surface } from 'react-native-paper'
+import { router } from 'expo-router';
+import React from 'react';
+import { Button, Surface } from 'react-native-paper';
 
-import { Locales, ScreenInfo, styles } from '@/lib'
+import { Locales, ScreenInfo, styles } from '@/lib';
 
 const Profile = () => (
   <Surface style={styles.screen}>
-    <ScreenInfo title={Locales.t('profile')} path="app/(tabs)/profile.tsx" />
+    <ScreenInfo
+      title={Locales.t('profile')}
+      path="app/(tabs)/profile.tsx"
+    />
 
     <Surface
       elevation={0}
@@ -19,15 +22,21 @@ const Profile = () => (
         bottom: 0,
       }}
     >
-      <Button mode="contained" onPress={() => router.push('/(auth)/login')}>
+      <Button
+        mode="contained"
+        onPress={() => router.push('/(auth)/login')}
+      >
         Login
       </Button>
 
-      <Button mode="contained" onPress={() => router.push('/(auth)/signup')}>
+      <Button
+        mode="contained"
+        onPress={() => router.push('/(auth)/signup')}
+      >
         Sign Up
       </Button>
     </Surface>
   </Surface>
-)
+);
 
-export default Profile
+export default Profile;

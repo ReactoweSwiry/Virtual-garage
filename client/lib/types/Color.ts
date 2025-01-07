@@ -1,5 +1,5 @@
-import { Colors } from '@/lib'
+import { Colors } from '@/lib';
 
-type Color = keyof typeof Colors.light
+type Color = keyof typeof Colors.light;
 
-export default Color
+export default Color;

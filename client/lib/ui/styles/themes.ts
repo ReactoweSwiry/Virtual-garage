@@ -2,21 +2,27 @@
  * Themes
  */
 
-import { MD3LightTheme, MD3DarkTheme, configureFonts } from 'react-native-paper'
+import {
+  MD3LightTheme,
+  MD3DarkTheme,
+  configureFonts,
+} from 'react-native-paper';
 
-import Colors from '@/lib/ui/styles/colors'
+import Colors from '@/lib/ui/styles/colors';
 
-const fonts = configureFonts({ config: { fontFamily: 'NotoSans_400Regular' } })
+const fonts = configureFonts({
+  config: { fontFamily: 'NotoSans_400Regular' },
+});
 
 const BaseLightTheme = {
   ...MD3LightTheme,
   fonts,
-}
+};
 
 const BaseDarkTheme = {
   ...MD3DarkTheme,
   fonts,
-}
+};
 
 const Themes = {
   light: {
@@ -179,6 +185,6 @@ const Themes = {
       },
     },
   },
-}
+};
 
-export default Themes
+export default Themes;

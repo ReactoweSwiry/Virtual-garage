@@ -1,10 +1,15 @@
-import { Canvas, LinearGradient, Rect, vec } from '@shopify/react-native-skia'
-import { Platform, useWindowDimensions } from 'react-native'
-import { useTheme } from 'react-native-paper'
+import {
+  Canvas,
+  LinearGradient,
+  Rect,
+  vec,
+} from '@shopify/react-native-skia';
+import { Platform, useWindowDimensions } from 'react-native';
+import { useTheme } from 'react-native-paper';
 
 const GradientBackground = (props: { height?: 'full' }) => {
-  const theme = useTheme()
-  const { height, width } = useWindowDimensions()
+  const theme = useTheme();
+  const { height, width } = useWindowDimensions();
 
   return Platform.OS !== 'web' ? (
     <Canvas
@@ -24,7 +29,7 @@ const GradientBackground = (props: { height?: 'full' }) => {
         />
       </Rect>
     </Canvas>
-  ) : undefined
-}
+  ) : undefined;
+};
 
-export default GradientBackground
+export default GradientBackground;

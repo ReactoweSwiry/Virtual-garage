@@ -1,5 +1,5 @@
-import React from 'react'
-import { ActivityIndicator, Surface } from 'react-native-paper'
+import React from 'react';
+import { ActivityIndicator, Surface } from 'react-native-paper';
 
 const LoadingIndicator = () => (
   <Surface
@@ -8,6 +8,6 @@ const LoadingIndicator = () => (
   >
     <ActivityIndicator />
   </Surface>
-)
+);
 
-export default LoadingIndicator
+export default LoadingIndicator;
