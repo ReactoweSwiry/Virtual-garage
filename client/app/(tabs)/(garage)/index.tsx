@@ -4,6 +4,8 @@ import {
   Text,
   ActivityIndicator,
   AnimatedFAB,
+  Button,
+  Surface,
 } from 'react-native-paper';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
@@ -42,15 +44,24 @@ export default function Garage() {
   }
 
   return (
-    <View style={styles.container}>
+    <Surface style={styles.container}>
       <View style={styles.title}>
         <Text variant="bodyMedium">{Locales.t('garageTitleText')}</Text>
       </View>
       <View style={styles.grid}>
         {cars.map((car) => (
           <View key={car.id} style={styles.cardWrapper}>
-            <Card style={styles.card}>
-              <Card.Title title={`${car.name} ${car.model}`} />
+            <Card
+              style={styles.card}
+              mode="contained"
+              onPress={() => console.log(`Go to -> /cars/${car.id}`)}
+            >
+              <Card.Content style={styles.cardContent}>
+                <Text variant="bodyMedium">
+                  {car.name} {car.model}
+                </Text>
+                <Text variant="bodySmall">{car.year}</Text>
+              </Card.Content>
               <Card.Cover
                 source={{
                   uri: car.car_image
@@ -58,6 +69,10 @@ export default function Garage() {
                     : 'https://picsum.photos/200',
                 }}
               />
+              <Card.Actions>
+                <Button>Cancel</Button>
+                <Button>Ok</Button>
+              </Card.Actions>
             </Card>
           </View>
         ))}
@@ -71,7 +86,7 @@ export default function Garage() {
         iconMode={'static'}
         style={styles.fab}
       />
-    </View>
+    </Surface>
   );
 }
 
@@ -79,7 +94,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
-    paddingTop: 8,
   },
   center: {
     display: 'flex',
@@ -97,14 +111,18 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   card: {
-    height: 150,
+    height: 180,
     overflow: 'hidden',
+  },
+  cardContent: {
+    paddingVertical: 12,
+    gap: 4,
   },
   title: {
     flexDirection: 'column',
     gap: 4,
     paddingHorizontal: 4,
-    paddingBottom: 16,
+    paddingVertical: 12,
   },
   fab: {
     position: 'absolute',
