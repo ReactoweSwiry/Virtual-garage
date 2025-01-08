@@ -1,180 +1,169 @@
-import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
-import { useForm, Controller } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-
-import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { useState } from 'react';
 import {
-	View,
-	Text,
-	TextInput,
-	Image,
-	TouchableOpacity,
-	Button,
-} from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+  Button,
+  Surface,
+  TextInput,
+  HelperText,
+  Text,
+  Snackbar,
+} from 'react-native-paper';
+import { View } from 'react-native';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import { useMutation } from '@tanstack/react-query';
 
-import styles from '@/styles/garage/new-car';
-import { FLASK_API_DEV } from '@/constants/api';
-import PickImageModal from '@/components/garage/PickImageModal';
-
-const carFormSchema = z.object({
-	name: z.string().min(3, 'Atleast 3 characters long').max(25),
-	model: z.string().min(3, 'Atleast 4 characters long').max(30),
-	plate_number: z.string().min(4, 'Minimum 4 characters').max(10),
-	year: z
-		.number()
-		.int()
-		.min(1970)
-		.refine((val) => `${val}`.length == 4, 'Year can only have 4 digits'),
-});
+import { styles } from '@/lib';
+import { addCar } from '@/lib/api/mutations';
+import { Car } from '@/lib/types/Car';
 
 export default function NewCar() {
-	const { mutate, isPending, isError, error } = useMutation({
-		mutationKey: ['Cars'],
-		mutationFn: async (data: z.infer<typeof carFormSchema>) => {
-			await axios.post(`${FLASK_API_DEV}/car/add`, data);
-		},
-	});
+  const [isSnackbarVisible, setIsSnackbarVisible] = useState(false);
 
-	const {
-		control,
-		handleSubmit,
-		formState: { errors },
-	} = useForm({
-		resolver: zodResolver(carFormSchema),
-		defaultValues: {
-			name: '',
-			model: '',
-			plate_number: '',
-			year: new Date().getFullYear(),
-		},
-	});
+  const { mutate, isPending, error } = useMutation({
+    mutationKey: ['Cars'],
+    mutationFn: addCar,
+    onError: () => {
+      setIsSnackbarVisible(true);
+    },
+  });
 
-	const onSubmit = (data: z.infer<typeof carFormSchema>) => {
-		mutate(data);
-	};
+  return (
+    <Surface style={{ ...styles.screen, alignItems: undefined }}>
+      <Text variant="headlineLarge" style={{ textAlign: 'center' }}>
+        Hi
+      </Text>
+      <Text variant="bodyLarge" style={{ textAlign: 'center' }}>
+        Add your car here
+      </Text>
 
-	return (
-		<ParallaxScrollView
-			headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-			headerImage={
-				<Image source={require('@/assets/images/partial-react-logo.png')} />
-			}>
-			<View style={styles.titleContainer}>
-				<Text style={styles.title}>Here you can add your car</Text>
-				<Text style={styles.description}>
-					Make sure to fill all the important for you information!
-				</Text>
-			</View>
-			<View style={styles.container}>
-				<TouchableOpacity style={styles.fileUpload}>
-					<MaterialIcons
-						name='upload-file'
-						size={40}
-						color='#007bff'
-					/>
-					<Text style={styles.fileUploadText}>Upload car image</Text>
-				</TouchableOpacity>
-				<View style={styles.dividerContainer}>
-					<View style={styles.divider} />
-					<Text style={styles.dividerText}>or</Text>
-					<View style={styles.divider} />
-				</View>
-				<Text style={styles.additionalText}>
-					Choose one of our icons that fits your car!
-				</Text>
-				<PickImageModal />
-				<Controller
-					control={control}
-					name='name'
-					render={({ field: { onChange, onBlur, value } }) => (
-						<View style={styles.inputContainer}>
-							<Text style={styles.label}>Name</Text>
-							<TextInput
-								style={[styles.input, errors.name && styles.inputError]}
-								onBlur={onBlur}
-								onChangeText={onChange}
-								value={value}
-								placeholder='Opel'
-							/>
-							{errors.name && (
-								<Text style={styles.errorText}>{errors.name.message}</Text>
-							)}
-						</View>
-					)}
-				/>
-				<Controller
-					control={control}
-					name='model'
-					render={({ field: { onChange, onBlur, value } }) => (
-						<View style={styles.inputContainer}>
-							<Text style={styles.label}>Model</Text>
-							<TextInput
-								style={[styles.input, errors.model && styles.inputError]}
-								onBlur={onBlur}
-								onChangeText={onChange}
-								value={value}
-								placeholder='Astra'
-							/>
-							{errors.model && (
-								<Text style={styles.errorText}>{errors.model.message}</Text>
-							)}
-						</View>
-					)}
-				/>
-				<Controller
-					control={control}
-					name='year'
-					render={({ field: { onChange, onBlur, value } }) => (
-						<View style={styles.inputContainer}>
-							<Text style={styles.label}>Year</Text>
-							<TextInput
-								style={[styles.input, errors.year && styles.inputError]}
-								keyboardType='numeric'
-								onBlur={onBlur}
-								onChangeText={(text) =>
-									onChange(text ? parseInt(text, 10) : '')
-								}
-								value={value ? value.toString() : ''}
-								placeholder='2011'
-							/>
-							{errors.year && (
-								<Text style={styles.errorText}>{errors.year.message}</Text>
-							)}
-						</View>
-					)}
-				/>
-				<Controller
-					control={control}
-					name='plate_number'
-					render={({ field: { onChange, onBlur, value } }) => (
-						<View style={styles.inputContainer}>
-							<Text style={styles.label}>Car plate</Text>
-							<TextInput
-								style={[styles.input, errors.plate_number && styles.inputError]}
-								onBlur={onBlur}
-								onChangeText={onChange}
-								value={value}
-								placeholder='WZW 91230'
-							/>
-							{errors.plate_number && (
-								<Text style={styles.errorText}>
-									{errors.plate_number.message}
-								</Text>
-							)}
-						</View>
-					)}
-				/>
-				<View style={styles.buttonContainer}>
-					<Button
-						title={isPending ? 'Saving your new car...' : 'Add a new car'}
-						onPress={handleSubmit(onSubmit)}
-					/>
-				</View>
-				{isError && <Text style={styles.errorText}>{error.message}</Text>}
-			</View>
-		</ParallaxScrollView>
-	);
+      <Formik
+        initialValues={{
+          name: '',
+          model: '',
+          plate_number: '',
+          year: new Date().getFullYear().toString(),
+        }}
+        onSubmit={(values: Car) => mutate(values)}
+        validationSchema={Yup.object().shape({
+          name: Yup.string()
+            .min(3, 'Too Short!')
+            .max(32, 'Too Long!')
+            .required('Please enter a car name'),
+          model: Yup.string()
+            .min(2, 'Too Short! must be at least 8 characters.')
+            .max(32, 'Too Long!')
+            .required('Please enter car model'),
+          plate_number: Yup.string()
+            .min(4, 'Too Short! must be at least 4 characters.')
+            .max(10, 'Too Long!')
+            .required('Please enter car plate number'),
+          year: Yup.number()
+            .min(1970, 'Year must be 1970 or later')
+            .max(
+              new Date().getFullYear(),
+              `Year can't exceed the current year`
+            )
+            .required('Please enter the manufacturing year'),
+        })}
+      >
+        {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
+          <>
+            <Surface elevation={0}>
+              <TextInput
+                maxLength={32}
+                mode="outlined"
+                label="Car Name"
+                value={values.name}
+                error={!!errors.name}
+                onBlur={handleBlur('name')}
+                placeholder="Enter your car name..."
+                onChangeText={handleChange('name')}
+              />
+              <HelperText type="error" visible={!!errors.name}>
+                {errors.name}
+              </HelperText>
+            </Surface>
+
+            <Surface elevation={0}>
+              <TextInput
+                maxLength={64}
+                mode="outlined"
+                label="Car Model"
+                value={values.model}
+                error={!!errors.model}
+                onBlur={handleBlur('model')}
+                placeholder="Enter your car model..."
+                onChangeText={handleChange('model')}
+              />
+              <HelperText type="error" visible={!!errors.model}>
+                {errors.model}
+              </HelperText>
+            </Surface>
+
+            <Surface elevation={0}>
+              <TextInput
+                maxLength={10}
+                mode="outlined"
+                label="Plate Number"
+                value={values.plate_number}
+                error={!!errors.plate_number}
+                onBlur={handleBlur('plate_number')}
+                placeholder="Enter your plate number..."
+                onChangeText={(text) =>
+                  handleChange('plate_number')(text.toUpperCase())
+                }
+              />
+              <HelperText type="error" visible={!!errors.plate_number}>
+                {errors.plate_number}
+              </HelperText>
+            </Surface>
+
+            <Surface elevation={0}>
+              <TextInput
+                maxLength={4}
+                mode="outlined"
+                label="Year"
+                value={values.year.toString()}
+                error={!!errors.year}
+                onBlur={handleBlur('year')}
+                keyboardType="numeric"
+                placeholder="Enter the manufacturing year..."
+                onChangeText={handleChange('year')}
+              />
+              <HelperText type="error" visible={!!errors.year}>
+                {errors.year}
+              </HelperText>
+            </Surface>
+
+            <Button
+              mode="contained"
+              onPress={() => handleSubmit()}
+              loading={isPending}
+            >
+              Add Car
+            </Button>
+          </>
+        )}
+      </Formik>
+      {isSnackbarVisible && (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'space-between',
+          }}
+        >
+          <Snackbar
+            visible={true}
+            onDismiss={() => setIsSnackbarVisible(false)}
+            action={{
+              label: 'Close',
+              onPress: () => setIsSnackbarVisible(false),
+            }}
+          >
+            {error?.message}
+          </Snackbar>
+        </View>
+      )}
+    </Surface>
+  );
 }

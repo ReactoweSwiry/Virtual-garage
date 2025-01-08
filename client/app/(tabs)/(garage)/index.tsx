@@ -1,58 +1,132 @@
-import { Image, Text, View } from 'react-native';
+import { View, StyleSheet, Dimensions } from 'react-native';
+import {
+  Card,
+  Text,
+  ActivityIndicator,
+  AnimatedFAB,
+  Button,
+  Surface,
+} from 'react-native-paper';
+import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 
-import { FLASK_API_DEV } from '@/constants/api';
-import styles from '@/styles/garage/car';
+import { getCars } from '@/lib/api/queries';
+import { Car } from '@/lib/types/Car';
+import { Locales } from '@/lib';
 
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import CarCard from '@/components/garage/CarCard';
-import AddCarCard from '@/components/garage/AddCarCard';
-import { Car } from '@/shared/types';
+const { width } = Dimensions.get('window');
+const cardW = (width - 48) / 2;
 
 export default function Garage() {
-	const {
-		data: cars,
-		isLoading,
-		error,
-	} = useQuery({
-		queryKey: ['Cars'],
-		queryFn: async () => {
-			const response = await axios.get(`${FLASK_API_DEV}/cars`);
-			return response.data;
-		},
-	});
+  const {
+    data: cars,
+    isPending,
+    error,
+  } = useQuery<Car[]>({
+    queryKey: ['Cars'],
+    queryFn: getCars,
+  });
 
-	return (
-		<ParallaxScrollView
-			headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-			headerImage={
-				<Image
-					source={require('@/assets/images/partial-react-logo.png')}
-					style={styles.reactLogo}
-				/>
-			}>
-			<View style={styles.titleContainer}>
-				<Text style={styles.title}>Welcome to your virtual garage!</Text>
-				<Text style={styles.description}>Here is your collection of cars</Text>
-			</View>
-			<View style={styles.content}>
-				{isLoading ? (
-					<Text>Preparing your vehicles...</Text> //Change to skeleton later
-				) : (
-					cars.map((car: Car) => (
-						<View
-							key={car.id}
-							style={styles.card}>
-							<CarCard {...car} />
-						</View>
-					))
-				)}
-				{!isLoading && <AddCarCard />}
-				{error && (
-					<Text>Error occured while preparing vehicles for you :</Text>
-				)}
-			</View>
-		</ParallaxScrollView>
-	);
+  if (isPending) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator animating={true} />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.center}>
+        <Text variant="bodyMedium">Something went wrong, try again</Text>
+      </View>
+    );
+  }
+
+  return (
+    <Surface style={styles.container}>
+      <View style={styles.title}>
+        <Text variant="bodyMedium">{Locales.t('garageTitleText')}</Text>
+      </View>
+      <View style={styles.grid}>
+        {cars.map((car) => (
+          <View key={car.id} style={styles.cardWrapper}>
+            <Card
+              style={styles.card}
+              mode="contained"
+              onPress={() => console.log(`Go to -> /cars/${car.id}`)}
+            >
+              <Card.Content style={styles.cardContent}>
+                <Text variant="bodyMedium">
+                  {car.name} {car.model}
+                </Text>
+                <Text variant="bodySmall">{car.year}</Text>
+              </Card.Content>
+              <Card.Cover
+                source={{
+                  uri: car.car_image
+                    ? `data:image/jpeg;base64,${car.car_image}`
+                    : 'https://picsum.photos/200',
+                }}
+              />
+              <Card.Actions>
+                <Button>Cancel</Button>
+                <Button>Ok</Button>
+              </Card.Actions>
+            </Card>
+          </View>
+        ))}
+      </View>
+      <AnimatedFAB
+        icon={'plus'}
+        label={'Label'}
+        extended={false}
+        onPress={() => router.push('/new-car')}
+        animateFrom={'right'}
+        iconMode={'static'}
+        style={styles.fab}
+      />
+    </Surface>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
+  center: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 640,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  cardWrapper: {
+    width: cardW,
+    marginBottom: 16,
+  },
+  card: {
+    height: 180,
+    overflow: 'hidden',
+  },
+  cardContent: {
+    paddingVertical: 12,
+    gap: 4,
+  },
+  title: {
+    flexDirection: 'column',
+    gap: 4,
+    paddingHorizontal: 4,
+    paddingVertical: 12,
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
+  },
+});

@@ -1,21 +1,33 @@
 {
   "expo": {
-    "name": "client",
-    "slug": "client",
+    "name": "expo-react-native-paper",
+    "slug": "virtual-garage-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "ExpoLocalization_supportsRTL": true
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.virtualgarage.virtualgarageapp"
     },
     "web": {
       "bundler": "metro",
@@ -24,18 +36,22 @@
     },
     "plugins": [
       "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
-        }
-      ]
+      "expo-secure-store",
+      "expo-font",
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "supportsRTL": true,
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "628c2508-0f94-4daa-b53d-a27acb55f58d"
+      }
+    },
+    "owner": "virtual-garage"
   }
 }

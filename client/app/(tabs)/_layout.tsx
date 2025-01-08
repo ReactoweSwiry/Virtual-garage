@@ -1,51 +1,81 @@
-import { Platform } from 'react-native';
-import { Tabs } from 'expo-router';
+import { Appbar, Tooltip } from 'react-native-paper';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Tabs, router } from 'expo-router';
 
-import { HapticTab } from '@/components/HapticTab';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Locales, TabBar, TabsHeader } from '@/lib';
 
-export default function TabLayout() {
-	return (
-		<Tabs
-			screenOptions={{
-				tabBarActiveTintColor: 'light',
-				headerShown: false,
-				tabBarButton: HapticTab,
-				tabBarBackground: TabBarBackground,
-				tabBarStyle: Platform.select({
-					ios: {
-						position: 'absolute',
-					},
-					default: {},
-				}),
-			}}>
-			<Tabs.Screen
-				name='(garage)'
-				options={{
-					title: '',
-					tabBarIcon: () => (
-						<MaterialIcons
-							name='house'
-							size={28}
-							style={{ paddingTop: 8 }}
-						/>
-					),
-				}}
-			/>
-			<Tabs.Screen
-				name='settings'
-				options={{
-					title: '',
-					tabBarIcon: () => (
-						<MaterialIcons
-							name='settings'
-							size={28}
-							style={{ paddingTop: 8 }}
-						/>
-					),
-				}}
-			/>
-		</Tabs>
-	);
-}
+const TabLayout = () => {
+  return (
+    <Tabs
+      tabBar={(props) => <TabBar {...props} />}
+      screenOptions={{
+        tabBarHideOnKeyboard: true,
+        header: (props) => (
+          <TabsHeader navProps={props} children={undefined} />
+        ),
+      }}
+    >
+      <Tabs.Screen
+        name="(garage)"
+        options={{
+          title: Locales.t('titleGarage'),
+          headerRight: () => (
+            <>
+              <Tooltip title={Locales.t('search')}>
+                <Appbar.Action
+                  icon="magnify"
+                  onPress={() => router.push('/search')}
+                />
+              </Tooltip>
+            </>
+          ),
+          tabBarIcon: (props) => (
+            <MaterialCommunityIcons
+              {...props}
+              size={24}
+              name={props.focused ? 'home' : 'home-outline'}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: Locales.t('profile'),
+          headerRight: () => (
+            <>
+              <Tooltip title={Locales.t('search')}>
+                <Appbar.Action
+                  icon="magnify"
+                  onPress={() => router.push('/search')}
+                />
+              </Tooltip>
+            </>
+          ),
+          tabBarIcon: (props) => (
+            <MaterialCommunityIcons
+              {...props}
+              size={24}
+              name={props.focused ? 'account' : 'account-outline'}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: Locales.t('titleSettings'),
+          tabBarIcon: (props) => (
+            <MaterialCommunityIcons
+              {...props}
+              size={24}
+              name={props.focused ? 'cog' : 'cog-outline'}
+            />
+          ),
+        }}
+      />
+    </Tabs>
+  );
+};
+
+export default TabLayout;
