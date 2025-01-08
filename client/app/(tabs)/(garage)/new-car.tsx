@@ -1,17 +1,32 @@
-import { Formik } from 'formik';
-import React from 'react';
+import { useState } from 'react';
 import {
   Button,
   Surface,
   TextInput,
   HelperText,
   Text,
+  Snackbar,
 } from 'react-native-paper';
+import { View } from 'react-native';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
+import { useMutation } from '@tanstack/react-query';
 
 import { styles } from '@/lib';
+import { addCar } from '@/lib/api/mutations';
+import { Car } from '@/lib/types/Car';
 
 export default function NewCar() {
+  const [isSnackbarVisible, setIsSnackbarVisible] = useState(false);
+
+  const { mutate, isPending, error } = useMutation({
+    mutationKey: ['Cars'],
+    mutationFn: addCar,
+    onError: () => {
+      setIsSnackbarVisible(true);
+    },
+  });
+
   return (
     <Surface style={{ ...styles.screen, alignItems: undefined }}>
       <Text variant="headlineLarge" style={{ textAlign: 'center' }}>
@@ -26,17 +41,17 @@ export default function NewCar() {
           name: '',
           model: '',
           plate_number: '',
-          year: new Date().getFullYear(),
+          year: new Date().getFullYear().toString(),
         }}
-        onSubmit={(values) => console.log(values)}
+        onSubmit={(values: Car) => mutate(values)}
         validationSchema={Yup.object().shape({
           name: Yup.string()
             .min(3, 'Too Short!')
             .max(32, 'Too Long!')
             .required('Please enter a car name'),
           model: Yup.string()
-            .min(8, 'Too Short! must be at least 8 characters.')
-            .max(64, 'Too Long!')
+            .min(2, 'Too Short! must be at least 8 characters.')
+            .max(32, 'Too Long!')
             .required('Please enter car model'),
           plate_number: Yup.string()
             .min(4, 'Too Short! must be at least 4 characters.')
@@ -94,7 +109,9 @@ export default function NewCar() {
                 error={!!errors.plate_number}
                 onBlur={handleBlur('plate_number')}
                 placeholder="Enter your plate number..."
-                onChangeText={handleChange('plate_number')}
+                onChangeText={(text) =>
+                  handleChange('plate_number')(text.toUpperCase())
+                }
               />
               <HelperText type="error" visible={!!errors.plate_number}>
                 {errors.plate_number}
@@ -118,12 +135,35 @@ export default function NewCar() {
               </HelperText>
             </Surface>
 
-            <Button mode="contained" onPress={() => handleSubmit}>
+            <Button
+              mode="contained"
+              onPress={() => handleSubmit()}
+              loading={isPending}
+            >
               Add Car
             </Button>
           </>
         )}
       </Formik>
+      {isSnackbarVisible && (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'space-between',
+          }}
+        >
+          <Snackbar
+            visible={true}
+            onDismiss={() => setIsSnackbarVisible(false)}
+            action={{
+              label: 'Close',
+              onPress: () => setIsSnackbarVisible(false),
+            }}
+          >
+            {error?.message}
+          </Snackbar>
+        </View>
+      )}
     </Surface>
   );
 }

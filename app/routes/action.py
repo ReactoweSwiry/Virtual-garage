@@ -4,11 +4,11 @@ from datetime import datetime
 
 from ..database import Session
 
-from ..models import Car, Car_Action
+from ..models import Car, Action
 from ..utils import read_data_from_img
 
 
-def car_action_routes(app: Flask):
+def action_routes(app: Flask):
 
     @app.route('/action/autocomplete_from_image', methods=['POST'])
     def autocomplete_from_image():
@@ -17,7 +17,7 @@ def car_action_routes(app: Flask):
 
         return output
 
-    @app.route('/action/add/<int:car_id>', methods=['POST'])
+    @app.route('/action/<int:car_id>', methods=['POST'])
     def add_action(car_id):
         data = request.get_json()
         action = data.get('action')
@@ -32,7 +32,7 @@ def car_action_routes(app: Flask):
         try:
             car = session.query(Car).filter_by(id=car_id).one()
 
-            car_action = Car_Action(
+            car_action = Action(
                 car_id=car.id,
                 action=action,
                 details=details,

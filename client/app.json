@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "expo-react-native-paper",
-    "slug": "expo-react-native-paper",
+    "slug": "virtual-garage-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -13,15 +13,21 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "ExpoLocalization_supportsRTL": true
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.virtualgarage.virtualgarageapp"
     },
     "web": {
       "bundler": "metro",
@@ -38,7 +44,14 @@
       "typedRoutes": true
     },
     "extra": {
-      "supportsRTL": true
-    }
+      "supportsRTL": true,
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "628c2508-0f94-4daa-b53d-a27acb55f58d"
+      }
+    },
+    "owner": "virtual-garage"
   }
 }

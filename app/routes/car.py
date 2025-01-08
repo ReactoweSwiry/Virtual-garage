@@ -3,7 +3,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from ..database import Session
 from ..utils import convert_blob_to_base64
-from ..models import Car, Car_Action
+from ..models import Car, Action
 
 
 def car_routes(app: Flask):
@@ -33,7 +33,7 @@ def car_routes(app: Flask):
         finally:
             session.close()
 
-    @app.route('/car/add', methods=['POST'])
+    @app.route('/cars', methods=['POST'])
     def add_car():
         data = request.get_json()
         name = data.get('name')
@@ -55,7 +55,7 @@ def car_routes(app: Flask):
         finally:
             session.close()
 
-    @app.route('/car/upload-image/<int:car_id>', methods=['PATCH'])
+    @app.route('/cars/<int:car_id>', methods=['PATCH'])
     def upload_car_image(car_id):
         car_image = request.files['file']
         car_image_blob = car_image.read()
@@ -73,12 +73,12 @@ def car_routes(app: Flask):
             session.close()
 
     @app.route('/car/<int:car_id>', methods=['GET'])
-    def get_car_actions(car_id):
+    def get_car(car_id):
         session = Session()
 
         try:
             car = session.query(Car).filter_by(id=car_id).one()
-            actions = session.query(Car_Action).filter_by(car_id=car_id).all()
+            actions = session.query(Action).filter_by(car_id=car_id).all()
 
             car_image = convert_blob_to_base64(
                 car.car_image)

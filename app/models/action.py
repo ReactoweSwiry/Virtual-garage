@@ -9,8 +9,8 @@ from .base import Base
 from .car import Car
 
 
-class Car_Action(Base):
-    __tablename__ = "Car_Actions"
+class Action(Base):
+    __tablename__ = "Actions"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     car_id: Mapped[int] = mapped_column(ForeignKey("Cars.id"))
@@ -26,4 +26,4 @@ class Car_Action(Base):
 
 
 Car.actions = relationship(
-    "Car_Action", back_populates="car", cascade="all, delete-orphan")
+    "Action", back_populates="car", cascade="all, delete-orphan")

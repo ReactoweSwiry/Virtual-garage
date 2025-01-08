@@ -50,10 +50,7 @@ export default function Garage() {
         {cars.map((car) => (
           <View key={car.id} style={styles.cardWrapper}>
             <Card style={styles.card}>
-              <Card.Title
-                title={`${car.name} ${car.model}`}
-                subtitle={car.year}
-              />
+              <Card.Title title={`${car.name} ${car.model}`} />
               <Card.Cover
                 source={{
                   uri: car.car_image
@@ -88,7 +85,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    height: 320,
+    height: 640,
   },
   grid: {
     flexDirection: 'row',
@@ -100,7 +97,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   card: {
-    height: 200,
+    height: 150,
     overflow: 'hidden',
   },
   title: {
