@@ -54,7 +54,7 @@ export default function Garage() {
             <Card
               style={styles.card}
               mode="contained"
-              onPress={() => console.log(`Go to -> /cars/${car.id}`)}
+              onPress={() => router.push(`/view-car?id=${car.id}`)}
             >
               <Card.Content style={styles.cardContent}>
                 <Text variant="bodyMedium">

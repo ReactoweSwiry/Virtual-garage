@@ -80,8 +80,7 @@ def car_routes(app: Flask):
             car = session.query(Car).filter_by(id=car_id).one()
             actions = session.query(Action).filter_by(car_id=car_id).all()
 
-            car_image = convert_blob_to_base64(
-                car.car_image)
+            car_image = convert_blob_to_base64(car.car_image) if car.car_image else None
 
             return jsonify({
                 'car': {'id': car.id, 'name': car.name, 'model': car.model,
@@ -95,3 +94,5 @@ def car_routes(app: Flask):
             return jsonify({'error': f'Car with ID {car_id} not found'}), 404
         finally:
             session.close()
+    
+

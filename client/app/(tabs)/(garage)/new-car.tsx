@@ -15,6 +15,7 @@ import { useMutation } from '@tanstack/react-query';
 import { styles } from '@/lib';
 import { addCar } from '@/lib/api/mutations';
 import { Car } from '@/lib/types/Car';
+import React from 'react';
 
 export default function NewCar() {
   const [isSnackbarVisible, setIsSnackbarVisible] = useState(false);
