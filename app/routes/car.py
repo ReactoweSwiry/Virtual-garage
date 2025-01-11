@@ -55,7 +55,7 @@ def car_routes(app: Flask):
         finally:
             session.close()
 
-    @app.route('/cars/<int:car_id>', methods=['PATCH'])
+    @app.route('/car/<int:car_id>', methods=['PATCH'])
     def upload_car_image(car_id):
         car_image = request.files['file']
         car_image_blob = car_image.read()
@@ -80,7 +80,8 @@ def car_routes(app: Flask):
             car = session.query(Car).filter_by(id=car_id).one()
             actions = session.query(Action).filter_by(car_id=car_id).all()
 
-            car_image = convert_blob_to_base64(car.car_image) if car.car_image else None
+            car_image = convert_blob_to_base64(
+                car.car_image) if car.car_image else None
 
             return jsonify({
                 'car': {'id': car.id, 'name': car.name, 'model': car.model,
@@ -94,5 +95,3 @@ def car_routes(app: Flask):
             return jsonify({'error': f'Car with ID {car_id} not found'}), 404
         finally:
             session.close()
-    
-
