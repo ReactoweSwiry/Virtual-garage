@@ -1,17 +1,17 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Fragment, useState } from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, Image, Text } from 'react-native';
 import {
   Modal,
   Portal,
   IconButton,
   useTheme,
   Button,
-  Text,
 } from 'react-native-paper';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
 
 import { uploadCarImage } from '../api/mutations';
+import { Locales } from '../locales';
 
 export default function EditCarImage({ carId }: { carId: number }) {
   const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>(
@@ -37,6 +37,7 @@ export default function EditCarImage({ carId }: { carId: number }) {
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
+      allowsMultipleSelection: false,
     });
 
     if (!result.canceled) {
@@ -57,11 +58,10 @@ export default function EditCarImage({ carId }: { carId: number }) {
               backgroundColor: theme.colors.surface,
             },
           ]}
-          theme={theme}
         >
           <View style={styles.picker}>
             <Button onPress={imagePicker}>
-              Pick an image from the camera roll
+              {Locales.t('uploadCarImage')}
             </Button>
             {image && (
               <Image
@@ -85,7 +85,15 @@ export default function EditCarImage({ carId }: { carId: number }) {
             )}
           </View>
           {error && (
-            <Text variant="bodySmall">Something went horribly wrong</Text>
+            <Text
+              style={{
+                color: theme.colors.error,
+                paddingTop: 8,
+                textAlign: 'center',
+              }}
+            >
+              {Locales.t('errorTextCommon')}
+            </Text>
           )}
         </Modal>
       </Portal>
