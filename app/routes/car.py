@@ -95,3 +95,5 @@ def car_routes(app: Flask):
             return jsonify({'error': f'Car with ID {car_id} not found'}), 404
         finally:
             session.close()
+
+    
