@@ -14,6 +14,10 @@ export default function GarageLayout() {
         name="new-car"
         options={{ title: Locales.t('newCar'), headerShown: false }}
       />
+      <Stack.Screen
+        name="view-car"
+        options={{ title: Locales.t('viewCar'), headerShown: false }}
+      />
     </Stack>
   );
 }

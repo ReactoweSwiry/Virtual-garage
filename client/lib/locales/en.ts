@@ -20,6 +20,7 @@ const English = {
   darkMode: 'Dark',
   color: 'Color',
   changeColor: 'Change theme color',
+  errorTextCommon: 'Something went wrong please try again later.',
   changeScreenCode:
     'Change any of the text, save the file, and your app will automatically update',
   garageTitleText: 'Here is the collection of your cars',
@@ -27,6 +28,7 @@ const English = {
   newCar: 'New car',
   goHome: 'Go to home screen',
   openScreenCode: 'Open up the code for this screen',
+  uploadCarImage: 'Upload image of your car',
   save: 'Save',
   screen404: "This screen doesn't exist",
   titleGarage: 'Garage',

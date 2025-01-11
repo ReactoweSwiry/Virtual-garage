@@ -13,10 +13,10 @@ import {
 
 export default function Profile() {
   const [profile, setProfile] = useState({
-    name: "John Doe",
-    email: "johndoe@example.com",
-    profilePicture: "https://via.placeholder.com/100",
-    bio: "Passionate developer | Coffee enthusiast | Travel lover",
+    name: 'John Doe',
+    email: 'johndoe@example.com',
+    profilePicture: 'https://via.placeholder.com/100',
+    bio: 'Passionate developer | Coffee enthusiast | Travel lover',
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -32,7 +32,9 @@ export default function Profile() {
   };
 
   return (
-    <Surface style={[styles.screen, { backgroundColor: theme.colors.background }]}>
+    <Surface
+      style={[styles.screen, { backgroundColor: theme.colors.background }]}
+    >
       <View style={styles.container}>
         <Avatar.Image
           size={120}
