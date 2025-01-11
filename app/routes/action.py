@@ -24,7 +24,8 @@ def action_routes(app: Flask):
         details = data.get('details')
         service_station_name = data.get('service_station_name')
         date = data.get('date')
-
+        type = data.get('type')
+        cost = data.get('cost')
         # Add image from form/state (?)
 
         session = Session()
@@ -37,6 +38,8 @@ def action_routes(app: Flask):
                 action=action,
                 details=details,
                 service_station_name=service_station_name,
+                type= type,
+                cost= cost,
                 date=datetime.strptime(
                     date, '%Y-%m-%d %H:%M:%S') if date else datetime.utcnow()
             )

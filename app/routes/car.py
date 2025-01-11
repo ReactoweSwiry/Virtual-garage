@@ -79,7 +79,7 @@ def car_routes(app: Flask):
         try:
             car = session.query(Car).filter_by(id=car_id).one()
             actions = session.query(Action).filter_by(car_id=car_id).all()
-
+            print(actions)
             car_image = convert_blob_to_base64(
                 car.car_image) if car.car_image else None
 
@@ -88,7 +88,7 @@ def car_routes(app: Flask):
                         'plate_number': car.plate_number, 'year': car.year, 'car_image': car_image},
                 'actions': [
                     {'id': action.id, 'action': action.action,
-                        'details': action.details, 'date': action.date}
+                        'details': action.details, 'date': action.date, 'type': action.type, 'cost': action.cost}
                     for action in actions]
             })
         except NoResultFound:

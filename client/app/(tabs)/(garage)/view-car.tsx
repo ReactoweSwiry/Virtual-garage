@@ -14,20 +14,13 @@ import {
 } from 'react-native-paper';
 
 import { getCarById, getCarMaintenanceById } from '@/lib/api/queries';
-import { Car } from '@/lib/types/Car';
+import { Car, MaintenanceEvent } from '@/lib/types/Car';
 import EditCarImage from '@/lib/modals/edit-car-image';
 
 interface CarResponse {
   car: Car;
 }
 
-interface MaintenanceEvent {
-  id: string;
-  date: string;
-  type: 'repair' | 'oil_change' | 'inspection';
-  description: string;
-  cost: number;
-}
 
 export default function ViewCar() {
   const { id } = useLocalSearchParams();
@@ -70,30 +63,8 @@ export default function ViewCar() {
   }
 
   const { car, actions }: any = data.car;
-  console.log(actions);
 
   const maintenanceHistory: MaintenanceEvent[] = [
-    {
-      id: '1',
-      date: '2023-05-15',
-      type: 'oil_change',
-      description: 'Regular oil change',
-      cost: 50,
-    },
-    {
-      id: '2',
-      date: '2023-03-10',
-      type: 'repair',
-      description: 'Brake pad replacement',
-      cost: 200,
-    },
-    {
-      id: '3',
-      date: '2023-01-05',
-      type: 'inspection',
-      description: 'Annual inspection',
-      cost: 100,
-    },
     ...actions
   ];
 
@@ -144,13 +115,12 @@ export default function ViewCar() {
           </Chip>
         </View>
         <React.Fragment>
-          {/* <Divider /> */}
           <Button
-            mode="contained"
+            mode="outlined"
             onPress={() => router.push(`/maintenance?id=${id}`)}
             style={styles.addButton}
           >
-            Add Maintenance Event
+            Add Maintenance
           </Button>
         </React.Fragment>
       </View>
@@ -205,7 +175,7 @@ export default function ViewCar() {
           {maintenanceHistory.map((event, index) => (
             <React.Fragment key={event.id}>
               <List.Item
-                title={event.action || event.description}
+                title={event.action || event.type || event.description}
                 description={`${new Date(event.date).toLocaleDateString()} - $${event?.cost}`}
                 left={() => (
                   <Avatar.Icon
