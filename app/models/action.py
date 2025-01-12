@@ -1,4 +1,4 @@
-from sqlalchemy import String, ForeignKey, DateTime, BLOB
+from sqlalchemy import Float, String, ForeignKey, DateTime, BLOB
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
@@ -15,6 +15,8 @@ class Action(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     car_id: Mapped[int] = mapped_column(ForeignKey("Cars.id"))
     action: Mapped[str] = mapped_column(String(50))  # e.g., 'Changed brakes'
+    type: Mapped[str] = mapped_column(String(50), nullable=True)  # e.g., 'repair'
+    cost: Mapped[float] = mapped_column(Float, nullable=True)  # e.g., 100.0
     details: Mapped[str] = mapped_column(
         String(200), nullable=True)  # Additional info
     service_station_name: Mapped[str] = mapped_column(

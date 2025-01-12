@@ -14,3 +14,10 @@ export const getCarById = async (
   const response = await api.get('car/' + id);
   return response.data;
 };
+export const getCarMaintenanceById = async (
+  id: string | string[] | undefined
+): Promise<Car> => {
+  if (!id) throw new Error('Car ID is required');
+  const response = await api.get('car/' + id + '/maintenance');
+  return response.data;
+};

@@ -13,6 +13,6 @@ class Car(Base):
     plate_number: Mapped[str] = mapped_column(String(10), unique=True)
     year: Mapped[int] = mapped_column(Integer)
     car_image: Mapped[BLOB] = mapped_column(BLOB, nullable=True, default=None)
-
+    
     def __repr__(self) -> str:
         return f"Car(id={self.id!r}, name={self.name!r}, model={self.model!r}, year={self.year!r})"

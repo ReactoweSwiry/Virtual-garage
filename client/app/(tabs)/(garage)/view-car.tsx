@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { View, StyleSheet, ScrollView, Image } from 'react-native';
 import {
@@ -10,23 +10,17 @@ import {
   Avatar,
   Chip,
   useTheme,
+  Button,
 } from 'react-native-paper';
 
-import { getCarById } from '@/lib/api/queries';
-import { Car } from '@/lib/types/Car';
+import { getCarById, getCarMaintenanceById } from '@/lib/api/queries';
+import { Car, MaintenanceEvent } from '@/lib/types/Car';
 import EditCarImage from '@/lib/modals/edit-car-image';
 
 interface CarResponse {
   car: Car;
 }
 
-interface MaintenanceEvent {
-  id: string;
-  date: string;
-  type: 'repair' | 'oil_change' | 'inspection';
-  description: string;
-  cost: number;
-}
 
 export default function ViewCar() {
   const { id } = useLocalSearchParams();
@@ -68,31 +62,10 @@ export default function ViewCar() {
     );
   }
 
-  const { car } = data.car;
-  console.log(car);
+  const { car, actions }: any = data.car;
 
   const maintenanceHistory: MaintenanceEvent[] = [
-    {
-      id: '1',
-      date: '2023-05-15',
-      type: 'oil_change',
-      description: 'Regular oil change',
-      cost: 50,
-    },
-    {
-      id: '2',
-      date: '2023-03-10',
-      type: 'repair',
-      description: 'Brake pad replacement',
-      cost: 200,
-    },
-    {
-      id: '3',
-      date: '2023-01-05',
-      type: 'inspection',
-      description: 'Annual inspection',
-      cost: 100,
-    },
+    ...actions
   ];
 
   const getIconForEventType = (type: MaintenanceEvent['type']) => {
@@ -141,6 +114,15 @@ export default function ViewCar() {
             {car.plate_number}
           </Chip>
         </View>
+        <React.Fragment>
+          <Button
+            mode="outlined"
+            onPress={() => router.push(`/maintenance?id=${id}`)}
+            style={styles.addButton}
+          >
+            Add Maintenance
+          </Button>
+        </React.Fragment>
       </View>
 
       <List.Section>
@@ -189,11 +171,12 @@ export default function ViewCar() {
           title="Maintenance History"
           left={(props) => <List.Icon {...props} icon="history" />}
         >
+
           {maintenanceHistory.map((event, index) => (
             <React.Fragment key={event.id}>
               <List.Item
-                title={event.description}
-                description={`${event.date} - $${event.cost}`}
+                title={event.action || event.type || event.description}
+                description={`${new Date(event.date).toLocaleDateString()} - $${event?.cost}`}
                 left={() => (
                   <Avatar.Icon
                     size={40}
@@ -218,6 +201,10 @@ export default function ViewCar() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  addButton: {
+    position: 'absolute',
+    right: 16,
   },
   center: {
     flex: 1,
