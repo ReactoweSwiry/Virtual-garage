@@ -27,10 +27,13 @@ jobs:
         run: echo "Changed working directory to client"
 
       - name: Install Dependencies
+        working-directory: ./client
         run: npm install
 
       - name: Run Prettier
+        working-directory: ./client
         run: npm run format
 
       - name: Run ESLint
+        working-directory: ./client
         run: npm run lint
