@@ -1,11 +1,13 @@
+import axios from 'axios';
+
+import { Car } from '@/lib/types/Car';
+
 import api from './base';
 
 export const getCars = async () => {
   const response = await api.get('cars');
   return response.data;
 };
-import { Car } from '@/lib/types/Car';
-import axios from 'axios';
 
 export const getCarById = async (
   id: string | string[] | undefined

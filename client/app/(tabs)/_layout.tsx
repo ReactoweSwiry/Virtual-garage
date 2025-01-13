@@ -1,6 +1,6 @@
-import { Appbar, Tooltip } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs, router } from 'expo-router';
+import { Appbar, Tooltip } from 'react-native-paper';
 
 import { Locales, TabBar, TabsHeader } from '@/lib';
 

@@ -1,4 +1,7 @@
+import { useMutation } from '@tanstack/react-query';
+import { Formik } from 'formik';
 import { useState } from 'react';
+import { View } from 'react-native';
 import {
   Button,
   Surface,
@@ -7,10 +10,7 @@ import {
   Text,
   Snackbar,
 } from 'react-native-paper';
-import { View } from 'react-native';
-import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { useMutation } from '@tanstack/react-query';
 
 import { styles } from '@/lib';
 import { addCar } from '@/lib/api/mutations';
@@ -153,7 +153,7 @@ export default function NewCar() {
           }}
         >
           <Snackbar
-            visible={true}
+            visible
             onDismiss={() => setIsSnackbarVisible(false)}
             action={{
               label: 'Close',

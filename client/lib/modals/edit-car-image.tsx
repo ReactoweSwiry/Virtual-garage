@@ -1,4 +1,6 @@
-import { Fragment, useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import * as ImagePicker from 'expo-image-picker';
+import { useState } from 'react';
 import { StyleSheet, View, Image, Text } from 'react-native';
 import {
   Modal,
@@ -7,8 +9,6 @@ import {
   useTheme,
   Button,
 } from 'react-native-paper';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import * as ImagePicker from 'expo-image-picker';
 
 import { uploadCarImage } from '../api/mutations';
 import { Locales } from '../locales';
@@ -46,11 +46,11 @@ export default function EditCarImage({ carId }: { carId: number }) {
   };
 
   return (
-    <Fragment>
+    <>
       <Portal>
         <Modal
           visible={visible}
-          dismissable={true}
+          dismissable
           onDismiss={() => setVisible(false)}
           contentContainerStyle={[
             styles.container,
@@ -108,7 +108,7 @@ export default function EditCarImage({ carId }: { carId: number }) {
         ]}
         onPress={() => setVisible(true)}
       />
-    </Fragment>
+    </>
   );
 }
 

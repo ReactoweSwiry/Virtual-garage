@@ -15,7 +15,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  
 });
 
 export { Colors, Themes, styles };

@@ -1,6 +1,6 @@
-import React from 'react';
-import { router, useLocalSearchParams } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
+import { router, useLocalSearchParams } from 'expo-router';
+import React from 'react';
 import { View, StyleSheet, ScrollView, Image } from 'react-native';
 import {
   Text,
@@ -14,13 +14,12 @@ import {
 } from 'react-native-paper';
 
 import { getCarById, getCarMaintenanceById } from '@/lib/api/queries';
-import { Car, MaintenanceEvent } from '@/lib/types/Car';
 import EditCarImage from '@/lib/modals/edit-car-image';
+import { Car, MaintenanceEvent } from '@/lib/types/Car';
 
 interface CarResponse {
   car: Car;
 }
-
 
 export default function ViewCar() {
   const { id } = useLocalSearchParams();
@@ -41,7 +40,7 @@ export default function ViewCar() {
   if (isPending) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator animating={true} size="large" />
+        <ActivityIndicator animating size="large" />
       </View>
     );
   }
@@ -64,9 +63,7 @@ export default function ViewCar() {
 
   const { car, actions }: any = data.car;
 
-  const maintenanceHistory: MaintenanceEvent[] = [
-    ...actions
-  ];
+  const maintenanceHistory: MaintenanceEvent[] = [...actions];
 
   const getIconForEventType = (type: MaintenanceEvent['type']) => {
     switch (type) {
@@ -97,7 +94,7 @@ export default function ViewCar() {
           }}
           style={styles.carImage}
         />
-        <EditCarImage carId={id} />
+        <EditCarImage carId={car.id as number} />
       </View>
       <View style={styles.header}>
         <Text variant="headlineMedium" style={styles.carName}>
@@ -114,7 +111,7 @@ export default function ViewCar() {
             {car.plate_number}
           </Chip>
         </View>
-        <React.Fragment>
+        <>
           <Button
             mode="outlined"
             onPress={() => router.push(`/maintenance?id=${id}`)}
@@ -122,7 +119,7 @@ export default function ViewCar() {
           >
             Add Maintenance
           </Button>
-        </React.Fragment>
+        </>
       </View>
 
       <List.Section>
@@ -171,7 +168,6 @@ export default function ViewCar() {
           title="Maintenance History"
           left={(props) => <List.Icon {...props} icon="history" />}
         >
-
           {maintenanceHistory.map((event, index) => (
             <React.Fragment key={event.id}>
               <List.Item

@@ -1,3 +1,5 @@
+import { useQuery } from '@tanstack/react-query';
+import { router } from 'expo-router';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import {
   Card,
@@ -7,12 +9,10 @@ import {
   Button,
   Surface,
 } from 'react-native-paper';
-import { router } from 'expo-router';
-import { useQuery } from '@tanstack/react-query';
 
+import { Locales } from '@/lib';
 import { getCars } from '@/lib/api/queries';
 import { Car } from '@/lib/types/Car';
-import { Locales } from '@/lib';
 
 const { width } = Dimensions.get('window');
 const cardW = (width - 48) / 2;
@@ -30,7 +30,7 @@ export default function Garage() {
   if (isPending) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator animating={true} />
+        <ActivityIndicator animating />
       </View>
     );
   }
@@ -78,12 +78,12 @@ export default function Garage() {
         ))}
       </View>
       <AnimatedFAB
-        icon={'plus'}
-        label={'Label'}
+        icon="plus"
+        label="Label"
         extended={false}
         onPress={() => router.push('/new-car')}
-        animateFrom={'right'}
-        iconMode={'static'}
+        animateFrom="right"
+        iconMode="static"
         style={styles.fab}
       />
     </Surface>

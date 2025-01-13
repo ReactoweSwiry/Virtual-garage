@@ -1,0 +1,36 @@
+name: CI Pipeline for main branch
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  format-and-lint:
+    name: Format and lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Navigate to client folder
+        working-directory: ./client
+        run: echo "Changed working directory to client"
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Prettier
+        run: npm run format
+
+      - name: Run ESLint
+        run: npm run lint
