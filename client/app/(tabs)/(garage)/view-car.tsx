@@ -1,7 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
-import { View, StyleSheet, ScrollView, Image } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  Image,
+  ScrollResponderEvent,
+} from 'react-native';
 import {
   Text,
   ActivityIndicator,
