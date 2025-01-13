@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 import { Car } from '@/lib/types/Car';
 
 import api from './base';
@@ -16,6 +14,7 @@ export const getCarById = async (
   const response = await api.get('car/' + id);
   return response.data;
 };
+
 export const getCarMaintenanceById = async (
   id: string | string[] | undefined
 ): Promise<Car> => {

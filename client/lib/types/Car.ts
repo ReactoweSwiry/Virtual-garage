@@ -13,11 +13,3 @@ export interface MaintenanceEvent {
   description: string;
   cost: number;
 }
-
-export interface MaintenanceEvent {
-  id: number;
-  date: string;
-  type: 'repair' | 'oil_change' | 'inspection' | 'other';
-  description: string;
-  cost: number;
-}

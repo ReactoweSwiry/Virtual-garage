@@ -13,7 +13,7 @@ import {
   Button,
 } from 'react-native-paper';
 
-import { getCarById, getCarMaintenanceById } from '@/lib/api/queries';
+import { getCarById } from '@/lib/api/queries';
 import EditCarImage from '@/lib/modals/edit-car-image';
 import { Car, MaintenanceEvent } from '@/lib/types/Car';
 

@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  format-and-lint:
+  Format:
     name: Format and lint
     runs-on: ubuntu-latest
 
