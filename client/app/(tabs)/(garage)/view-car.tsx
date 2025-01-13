@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { View, StyleSheet, ScrollView, Image } from 'react-native';
 import {
   Text,
@@ -11,9 +12,10 @@ import {
   Chip,
   useTheme,
   Button,
+  IconButton,
 } from 'react-native-paper';
 
-import { getCarById, getCarMaintenanceById } from '@/lib/api/queries';
+import { getCarById, deleteCarActionById } from '@/lib/api/queries';
 import { Car, MaintenanceEvent } from '@/lib/types/Car';
 import EditCarImage from '@/lib/modals/edit-car-image';
 
@@ -26,7 +28,7 @@ export default function ViewCar() {
   const { id } = useLocalSearchParams();
   const theme = useTheme();
 
-  const { data, isPending, error } = useQuery<
+  const { data, isPending, error, refetch } = useQuery<
     CarResponse | undefined,
     Error
   >({
@@ -36,6 +38,23 @@ export default function ViewCar() {
       return { car };
     },
     enabled: !!id,
+  });
+  const {
+    mutate: deleteCarAction,
+    isPending: isDeleting,
+    error: deleteError,
+  } = useMutation({
+    mutationKey: ['DeleteAction'],
+    mutationFn: async (eventId: string) => {
+      await deleteCarActionById(eventId);
+    },
+    onSuccess: () => {
+      refetch();
+      console.log('Maintenance event deleted successfully');
+    },
+    onError: (error: Error) => {
+      console.error('Delete failed:', error.message);
+    },
   });
 
   if (isPending) {
@@ -63,7 +82,7 @@ export default function ViewCar() {
   }
 
   const { car, actions }: any = data.car;
-
+  console.log(actions);
   const maintenanceHistory: MaintenanceEvent[] = [
     ...actions
   ];
@@ -79,6 +98,11 @@ export default function ViewCar() {
       default:
         return 'car';
     }
+  };
+
+  const handleDelete = (eventId: string) => {
+    // Trigger the delete mutation
+    deleteCarAction(eventId);
   };
 
   return (
@@ -97,8 +121,10 @@ export default function ViewCar() {
           }}
           style={styles.carImage}
         />
-        <EditCarImage carId={id} />
-      </View>
+        <EditCarImage
+          //@ts-ignore
+          carId={id} />
+      </View >
       <View style={styles.header}>
         <Text variant="headlineMedium" style={styles.carName}>
           {car.name}
@@ -117,7 +143,7 @@ export default function ViewCar() {
         <React.Fragment>
           <Button
             mode="outlined"
-            onPress={() => router.push(`/maintenance?id=${id}`)}
+            onPress={() => router.push(`/maintenance?carId=${id}&mode=add`)}
             style={styles.addButton}
           >
             Add Maintenance
@@ -175,7 +201,7 @@ export default function ViewCar() {
           {maintenanceHistory.map((event, index) => (
             <React.Fragment key={event.id}>
               <List.Item
-                title={event.action || event.type || event.description}
+                title={event?.action || event.type || event.description}
                 description={`${new Date(event.date).toLocaleDateString()} - $${event?.cost}`}
                 left={() => (
                   <Avatar.Icon
@@ -187,6 +213,20 @@ export default function ViewCar() {
                     ]}
                   />
                 )}
+                right={() => (
+                  <View style={styles.iconButtonsContainer}>
+                    <IconButton
+                      icon="pencil"
+                      onPress={() => router.push(`/maintenance?actionId=${event?.id}&mode=edit`)}
+                      style={styles.iconButton}
+                    />
+                    <IconButton
+                      icon="trash-can"
+                      onPress={() => handleDelete(event?.id)}
+                      style={styles.iconButton}
+                    />
+                  </View>
+                )}
                 style={{ marginLeft: 8 }}
               />
               {index < maintenanceHistory.length - 1 && <Divider />}
@@ -194,7 +234,25 @@ export default function ViewCar() {
           ))}
         </List.Accordion>
       </List.Section>
-    </ScrollView>
+      {
+        isDeleting && (
+          <View style={styles.center}>
+            <ActivityIndicator animating={true} size="small" />
+            <Text variant="bodyMedium">Deleting...</Text>
+          </View>
+        )
+      }
+
+      {
+        deleteError && (
+          <View style={styles.center}>
+            <Text variant="bodyMedium" style={{ color: 'red' }}>
+              Error deleting event: {deleteError.message}
+            </Text>
+          </View>
+        )
+      }
+    </ScrollView >
   );
 }
 
@@ -237,5 +295,12 @@ const styles = StyleSheet.create({
   },
   eventIcon: {
     margin: 8,
+  },
+  iconButtonsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconButton: {
+    marginLeft: 8,
   },
 });

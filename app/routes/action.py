@@ -9,6 +9,19 @@ from ..utils import read_data_from_img
 
 
 def action_routes(app: Flask):
+    @app.route('/action/<int:action_id>', methods=['GET'])
+    def get_action(action_id):
+        session = Session()
+
+        try:
+            action = session.query(Action).filter_by(id=action_id).one()
+            return jsonify(action.to_dict())
+        except NoResultFound:
+            return jsonify({'error': f'Action with ID {action_id} not found'}), 404
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+        finally:
+            session.close()
 
     @app.route('/action/autocomplete_from_image', methods=['POST'])
     def autocomplete_from_image():
@@ -26,7 +39,6 @@ def action_routes(app: Flask):
         date = data.get('date')
         type = data.get('type')
         cost = data.get('cost')
-        # Add image from form/state (?)
 
         session = Session()
 
@@ -55,3 +67,54 @@ def action_routes(app: Flask):
             return jsonify({'error': str(e)}), 500
         finally:
             session.close()
+
+
+
+    @app.route('/action/<int:action_id>', methods=['PUT'])
+    def edit_action(action_id):
+        data = request.get_json()
+        session = Session()
+
+        try:
+            car_action = session.query(Action).filter_by(id=action_id).one()
+
+            # Update fields if provided
+            car_action.action = data.get('action', car_action.action)
+            car_action.details = data.get('details', car_action.details)
+            car_action.service_station_name = data.get('service_station_name', car_action.service_station_name)
+            car_action.type = data.get('type', car_action.type)
+            car_action.cost = data.get('cost', car_action.cost)
+            car_action.date = datetime.strptime(
+                data['date'], '%Y-%m-%d %H:%M:%S') if 'date' in data else car_action.date
+
+            session.commit()
+
+            return jsonify({'message': 'Action updated successfully!', 'action_id': action_id})
+        except NoResultFound:
+            return jsonify({'error': f'Action with ID {action_id} not found'}), 404
+        except Exception as e:
+            session.rollback()
+            return jsonify({'error': str(e)}), 500
+        finally:
+            session.close()
+
+    @app.route('/action/<int:action_id>', methods=['DELETE'])
+    def delete_action(action_id):
+        session = Session()
+        print(action_id)
+        try:
+            car_action = session.query(Action).filter_by(id=action_id).one()
+            session.delete(car_action)
+            session.commit()
+
+            return jsonify({'message': 'Action deleted successfully!', 'action_id': action_id})
+        except NoResultFound:
+            return jsonify({'error': f'Action with ID {action_id} not found'}), 404
+        except Exception as e:
+            session.rollback()
+            return jsonify({'error': str(e)}), 500
+        finally:
+            session.close()
+
+
+    
