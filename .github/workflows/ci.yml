@@ -1,15 +1,12 @@
 name: CI_EXPO
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
 
 jobs:
-  Format:
+  format:
     name: Format and lint
     runs-on: ubuntu-latest
 
