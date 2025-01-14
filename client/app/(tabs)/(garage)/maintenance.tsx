@@ -1,4 +1,8 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useLocalSearchParams } from 'expo-router';
+import { Formik } from 'formik';
 import React, { useState } from 'react';
+import { ScrollView } from 'react-native';
 import {
     Button,
     Surface,
@@ -150,20 +154,20 @@ export default function MaintenanceEventForm() {
                                 {errors.details}
                             </HelperText>
 
-                            <TextInput
-                                mode="outlined"
-                                label="Cost"
-                                value={values.cost.toString()}
-                                error={!!errors.cost}
-                                onBlur={handleBlur('cost')}
-                                placeholder="Enter the cost"
-                                onChangeText={handleChange('cost')}
-                                keyboardType="numeric"
-                            />
-                            <HelperText type="error" visible={!!errors.cost}>
-                                {errors.cost}
-                            </HelperText>
 
+              <TextInput
+                mode="outlined"
+                label="Cost"
+                value={values.cost.toString()}
+                error={!!errors.cost}
+                onBlur={handleBlur('cost')}
+                placeholder="Enter the cost"
+                onChangeText={handleChange('cost')}
+                keyboardType="numeric"
+              />
+              <HelperText type="error" visible={!!errors.cost}>
+                {errors.cost}
+              </HelperText>
                             <TextInput
                                 mode="outlined"
                                 label="Service Station Name"

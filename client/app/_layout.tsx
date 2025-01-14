@@ -6,6 +6,7 @@ import {
   DefaultTheme as NavLightTheme,
   ThemeProvider,
 } from '@react-navigation/native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import * as Localization from 'expo-localization';
 import { SplashScreen, Stack } from 'expo-router';
@@ -14,7 +15,6 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { Platform, useColorScheme } from 'react-native';
 import { adaptNavigationTheme, PaperProvider } from 'react-native-paper';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { Locales, Setting, StackHeader, Themes } from '@/lib';
 

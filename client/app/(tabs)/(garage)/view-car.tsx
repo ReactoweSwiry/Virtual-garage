@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -14,10 +15,13 @@ import {
   IconButton,
   Menu,
 } from 'react-native-paper';
+
 import MaintenanceDetailsModal from '@/lib/modals/maintenance';
 import { getCarById, deleteCarActionById } from '@/lib/api/queries';
 import { Car, MaintenanceEvent } from '@/lib/types/Car';
+
 import EditCarImage from '@/lib/modals/edit-car-image';
+import { Car, MaintenanceEvent } from '@/lib/types/Car';
 
 interface CarResponse {
   car: Car;
@@ -68,7 +72,7 @@ export default function ViewCar() {
   if (isPending) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator animating={true} size="large" />
+        <ActivityIndicator animating size="large" />
       </View>
     );
   }
@@ -91,7 +95,6 @@ export default function ViewCar() {
 
   const { car, actions }: any = data.car;
   const maintenanceHistory: MaintenanceEvent[] = [...actions];
-
   const sortedMaintenanceHistory = maintenanceHistory.sort((a, b) => {
     switch (sortBy) {
       case 'date':
@@ -168,7 +171,7 @@ export default function ViewCar() {
           }}
           style={styles.carImage}
         />
-        <EditCarImage carId={id} />
+        <EditCarImage carId={car.id as number} />
       </View>
       <View style={styles.header}>
         <Text variant="headlineMedium" style={styles.carName}>
@@ -261,7 +264,6 @@ export default function ViewCar() {
                     ]}
                   />
                 )}
-
                 right={() => (
                   <View style={styles.iconButtonsContainer}>
                     <IconButton

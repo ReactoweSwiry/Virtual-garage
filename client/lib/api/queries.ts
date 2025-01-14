@@ -1,3 +1,5 @@
+import { Car } from '@/lib/types/Car';
+
 import api from './base';
 import { Car } from '@/lib/types/Car';
 import { MaintenanceEvent } from '@/lib/types/Car';
@@ -20,6 +22,7 @@ export const addAction = async (carId: number, values: MaintenanceEvent) => {
 };
 
 export const deleteCarActionById = async (id: string | string[] | undefined): Promise<void> => {
+
   if (!id) throw new Error('Car ID is required');
   console.log('Deleting event:', id);
   await api.delete('action/' + id, {
@@ -42,4 +45,5 @@ export const getMaintenanceDetails = async (id: string | string[] | undefined): 
   const response = await api.get('action/' + id);
   console.log('Fetched Maintenance Details:', response.data);
   return response.data;
-}
+};
+
