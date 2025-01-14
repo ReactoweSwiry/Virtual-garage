@@ -1,8 +1,7 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { View, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, StyleSheet, ScrollView, Image, useWindowDimensions } from 'react-native';
 import {
   Text,
   ActivityIndicator,
@@ -13,8 +12,9 @@ import {
   useTheme,
   Button,
   IconButton,
+  Menu,
 } from 'react-native-paper';
-
+import MaintenanceDetailsModal from '@/lib/modals/maintenance';
 import { getCarById, deleteCarActionById } from '@/lib/api/queries';
 import { Car, MaintenanceEvent } from '@/lib/types/Car';
 import EditCarImage from '@/lib/modals/edit-car-image';
@@ -23,10 +23,17 @@ interface CarResponse {
   car: Car;
 }
 
+type SortOption = 'date' | 'cost' | 'type' | 'action';
 
 export default function ViewCar() {
   const { id } = useLocalSearchParams();
   const theme = useTheme();
+  const { width } = useWindowDimensions();
+  const [sortBy, setSortBy] = useState<SortOption>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<MaintenanceEvent | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const { data, isPending, error, refetch } = useQuery<
     CarResponse | undefined,
@@ -39,6 +46,7 @@ export default function ViewCar() {
     },
     enabled: !!id,
   });
+
   const {
     mutate: deleteCarAction,
     isPending: isDeleting,
@@ -82,10 +90,28 @@ export default function ViewCar() {
   }
 
   const { car, actions }: any = data.car;
-  console.log(actions);
-  const maintenanceHistory: MaintenanceEvent[] = [
-    ...actions
-  ];
+  const maintenanceHistory: MaintenanceEvent[] = [...actions];
+
+  const sortedMaintenanceHistory = maintenanceHistory.sort((a, b) => {
+    switch (sortBy) {
+      case 'date':
+        return sortOrder === 'asc'
+          ? new Date(a.date).getTime() - new Date(b.date).getTime()
+          : new Date(b.date).getTime() - new Date(a.date).getTime();
+      case 'cost':
+        return sortOrder === 'asc' ? a.cost - b.cost : b.cost - a.cost;
+      case 'type':
+        return sortOrder === 'asc'
+          ? a.type.localeCompare(b.type)
+          : b.type.localeCompare(a.type);
+      case 'action':
+        return sortOrder === 'asc'
+          ? a.action.localeCompare(b.action)
+          : b.action.localeCompare(a.action);
+      default:
+        return 0;
+    }
+  });
 
   const getIconForEventType = (type: MaintenanceEvent['type']) => {
     switch (type) {
@@ -101,8 +127,29 @@ export default function ViewCar() {
   };
 
   const handleDelete = (eventId: string) => {
-    // Trigger the delete mutation
     deleteCarAction(eventId);
+  };
+
+  const toggleSortOrder = () => {
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  };
+
+  const getSortLabel = (option: SortOption) => {
+    switch (option) {
+      case 'date':
+        return 'Date';
+      case 'cost':
+        return 'Cost';
+      case 'type':
+        return 'Type';
+      case 'action':
+        return 'Action';
+    }
+  };
+
+  const showEventDetails = (event: MaintenanceEvent) => {
+    setSelectedEvent(event);
+    setModalVisible(true);
   };
 
   return (
@@ -121,10 +168,8 @@ export default function ViewCar() {
           }}
           style={styles.carImage}
         />
-        <EditCarImage
-          //@ts-ignore
-          carId={id} />
-      </View >
+        <EditCarImage carId={id} />
+      </View>
       <View style={styles.header}>
         <Text variant="headlineMedium" style={styles.carName}>
           {car.name}
@@ -140,15 +185,13 @@ export default function ViewCar() {
             {car.plate_number}
           </Chip>
         </View>
-        <React.Fragment>
-          <Button
-            mode="outlined"
-            onPress={() => router.push(`/maintenance?carId=${id}&mode=add`)}
-            style={styles.addButton}
-          >
-            Add Maintenance
-          </Button>
-        </React.Fragment>
+        <Button
+          mode="outlined"
+          onPress={() => router.push(`/maintenance?carId=${id}&mode=add`)}
+          style={styles.addButton}
+        >
+          Add Maintenance
+        </Button>
       </View>
 
       <List.Section>
@@ -157,39 +200,21 @@ export default function ViewCar() {
           left={(props) => <List.Icon {...props} icon="car-info" />}
         >
           {[
-            {
-              title: 'Manufacturer',
-              description: car.manufacturer,
-              icon: 'domain',
-            },
+            { title: 'Manufacturer', description: car.manufacturer, icon: 'domain' },
             { title: 'Model', description: car.model, icon: 'car-side' },
-            {
-              title: 'Year',
-              description: car.year?.toString(),
-              icon: 'calendar',
-            },
+            { title: 'Year', description: car.year?.toString(), icon: 'calendar' },
             { title: 'Color', description: car.color, icon: 'palette' },
             { title: 'VIN', description: car.vin, icon: 'barcode' },
-            {
-              title: 'Plate Number',
-              description: car.plate_number,
-              icon: 'card-text',
-            },
-            {
-              title: 'Mileage',
-              description: `${car.mileage} km`,
-              icon: 'speedometer',
-            },
+            { title: 'Plate Number', description: car.plate_number, icon: 'card-text' },
+            { title: 'Mileage', description: `${car.mileage} km`, icon: 'speedometer' },
           ].map((item, index) => (
-            <React.Fragment key={index}>
-              <List.Item
-                key={index}
-                title={item.title}
-                description={item.description || 'N/A'}
-                left={() => <List.Icon icon={item.icon} />}
-                style={{ marginLeft: 16 }}
-              />
-            </React.Fragment>
+            <List.Item
+              key={index}
+              title={item.title}
+              description={item.description || 'N/A'}
+              left={() => <List.Icon icon={item.icon} />}
+              style={{ marginLeft: 16 }}
+            />
           ))}
         </List.Accordion>
 
@@ -197,12 +222,35 @@ export default function ViewCar() {
           title="Maintenance History"
           left={(props) => <List.Icon {...props} icon="history" />}
         >
-
-          {maintenanceHistory.map((event, index) => (
+          <View style={[
+            styles.sortContainer,
+            width > 600 ? styles.sortContainerWide : null
+          ]}>
+            <Menu
+              visible={menuVisible}
+              onDismiss={() => setMenuVisible(false)}
+              anchor={
+                <Button onPress={() => setMenuVisible(true)}>
+                  Sort by: {getSortLabel(sortBy)}
+                </Button>
+              }
+            >
+              <Menu.Item onPress={() => { setSortBy('date'); setMenuVisible(false); }} title="Date" />
+              <Menu.Item onPress={() => { setSortBy('cost'); setMenuVisible(false); }} title="Cost" />
+              <Menu.Item onPress={() => { setSortBy('type'); setMenuVisible(false); }} title="Type" />
+              <Menu.Item onPress={() => { setSortBy('action'); setMenuVisible(false); }} title="action" />
+            </Menu>
+            <IconButton
+              icon={sortOrder === 'asc' ? 'sort-ascending' : 'sort-descending'}
+              onPress={toggleSortOrder}
+            />
+          </View>
+          {sortedMaintenanceHistory.map((event, index) => (
             <React.Fragment key={event.id}>
               <List.Item
                 title={event?.action || event.type || event.description}
                 description={`${new Date(event.date).toLocaleDateString()} - $${event?.cost}`}
+                onPress={() => showEventDetails(event)}
                 left={() => (
                   <Avatar.Icon
                     size={40}
@@ -213,6 +261,7 @@ export default function ViewCar() {
                     ]}
                   />
                 )}
+
                 right={() => (
                   <View style={styles.iconButtonsContainer}>
                     <IconButton
@@ -222,37 +271,37 @@ export default function ViewCar() {
                     />
                     <IconButton
                       icon="trash-can"
-                      onPress={() => handleDelete(event?.id)}
+                      onPress={() => handleDelete(event?.id.toString())}
                       style={styles.iconButton}
                     />
                   </View>
                 )}
                 style={{ marginLeft: 8 }}
               />
-              {index < maintenanceHistory.length - 1 && <Divider />}
+              {index < sortedMaintenanceHistory.length - 1 && <Divider />}
             </React.Fragment>
           ))}
         </List.Accordion>
       </List.Section>
-      {
-        isDeleting && (
-          <View style={styles.center}>
-            <ActivityIndicator animating={true} size="small" />
-            <Text variant="bodyMedium">Deleting...</Text>
-          </View>
-        )
-      }
-
-      {
-        deleteError && (
-          <View style={styles.center}>
-            <Text variant="bodyMedium" style={{ color: 'red' }}>
-              Error deleting event: {deleteError.message}
-            </Text>
-          </View>
-        )
-      }
-    </ScrollView >
+      {isDeleting && (
+        <View style={styles.center}>
+          <ActivityIndicator animating={true} size="small" />
+          <Text variant="bodyMedium">Deleting...</Text>
+        </View>
+      )}
+      {deleteError && (
+        <View style={styles.center}>
+          <Text variant="bodyMedium" style={{ color: 'red' }}>
+            Error deleting event: {deleteError.message}
+          </Text>
+        </View>
+      )}
+      <MaintenanceDetailsModal
+        visible={modalVisible}
+        onDismiss={() => setModalVisible(false)}
+        event={selectedEvent}
+      />
+    </ScrollView>
   );
 }
 
@@ -302,5 +351,15 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     marginLeft: 8,
+  },
+  sortContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  sortContainerWide: {
+    justifyContent: 'flex-end',
   },
 });
