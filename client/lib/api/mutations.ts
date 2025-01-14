@@ -1,5 +1,3 @@
-import { Car, MaintenanceEvent } from '@/lib/types/Car';
-
 import api from './base';
 import { Car } from '@/lib/types/Car';
 

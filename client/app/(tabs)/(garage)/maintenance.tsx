@@ -1,5 +1,3 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useLocalSearchParams } from 'expo-router';
 import { Formik } from 'formik';
 import React, { useState } from 'react';
 import { ScrollView } from 'react-native';
@@ -13,8 +11,6 @@ import {
     Menu,
     TouchableRipple,
 } from 'react-native-paper';
-import { ScrollView } from 'react-native';
-import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
@@ -155,19 +151,19 @@ export default function MaintenanceEventForm() {
                             </HelperText>
 
 
-              <TextInput
-                mode="outlined"
-                label="Cost"
-                value={values.cost.toString()}
-                error={!!errors.cost}
-                onBlur={handleBlur('cost')}
-                placeholder="Enter the cost"
-                onChangeText={handleChange('cost')}
-                keyboardType="numeric"
-              />
-              <HelperText type="error" visible={!!errors.cost}>
-                {errors.cost}
-              </HelperText>
+                            <TextInput
+                                mode="outlined"
+                                label="Cost"
+                                value={values.cost.toString()}
+                                error={!!errors.cost}
+                                onBlur={handleBlur('cost')}
+                                placeholder="Enter the cost"
+                                onChangeText={handleChange('cost')}
+                                keyboardType="numeric"
+                            />
+                            <HelperText type="error" visible={!!errors.cost}>
+                                {errors.cost}
+                            </HelperText>
                             <TextInput
                                 mode="outlined"
                                 label="Service Station Name"

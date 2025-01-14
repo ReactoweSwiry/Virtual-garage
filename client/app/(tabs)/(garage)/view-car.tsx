@@ -18,8 +18,6 @@ import {
 
 import MaintenanceDetailsModal from '@/lib/modals/maintenance';
 import { getCarById, deleteCarActionById } from '@/lib/api/queries';
-import { Car, MaintenanceEvent } from '@/lib/types/Car';
-
 import EditCarImage from '@/lib/modals/edit-car-image';
 import { Car, MaintenanceEvent } from '@/lib/types/Car';
 
