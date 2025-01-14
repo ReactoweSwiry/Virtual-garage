@@ -1,6 +1,8 @@
 import { Car, MaintenanceEvent } from '@/lib/types/Car';
 
 import api from './base';
+import { Car } from '@/lib/types/Car';
+
 
 export const addCar = async (car: Car) => {
   return await api.post('cars', car);
@@ -17,9 +19,4 @@ export const uploadCarImage = async (carId: number, file: File) => {
   });
 };
 
-export const addMaintenanceEvent = async (
-  carId: number,
-  values: MaintenanceEvent
-) => {
-  return await api.post(`/action/${carId}`, values);
-};
+

@@ -8,8 +8,12 @@ export type Car = {
 };
 export interface MaintenanceEvent {
   id: number;
+  action: string;
+  details?: string;
+  service_station_name?: string;
   date: string;
-  type: string;
+  type: 'repair' | 'oil_change' | 'inspection' | 'other';
   description: string;
   cost: number;
 }
+

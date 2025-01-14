@@ -26,6 +26,20 @@ class Action(Base):
         DateTime, default=datetime.utcnow)  # Use callable
     car = relationship("Car", back_populates="actions")
 
+    
+    def to_dict(self):
+        """Converts the Action object to a dictionary."""
+        return {
+            "id": self.id,
+            "car_id": self.car_id,
+            "action": self.action,
+            "type": self.type,
+            "cost": self.cost,
+            "details": self.details,
+            "service_station_name": self.service_station_name,
+            "car_image": self.car_image.decode('utf-8') if self.car_image else None,  # Handle BLOB if needed
+            "date": self.date.isoformat() if self.date else None,
+        }
 
 Car.actions = relationship(
     "Action", back_populates="car", cascade="all, delete-orphan")
