@@ -49,17 +49,15 @@ export default function MaintenanceEventForm() {
         };
     }, [fetchedData]);
 
-    console.log('initialData:', initialData);
-    // Choose mutation function dynamically
     const mutationFn =
         mode === 'add'
-            ? (values: any) => addAction(carId, values) // Add mode requires carId
-            : (values: any) => updateCarActionById(actionId, values); // Edit mode requires actionId
+            ? (values: any) => addAction(Number(carId), values) as any
+            : (values: any) => updateCarActionById(actionId, values) as any;
 
     const { mutate, isPending, error } = useMutation({
         mutationFn,
         onSuccess: () => {
-            queryClient.invalidateQueries(['MaintenanceEvents']);
+            queryClient.invalidateQueries({ queryKey: ['MaintenanceEvents'] });
             setIsSnackbarVisible(true);
         },
         onError: () => {
@@ -67,12 +65,19 @@ export default function MaintenanceEventForm() {
         },
     });
 
-    const handleFormSubmit = (values: any) => {
+    interface FormValues {
+        action: string;
+        details: string;
+        cost: string;
+        type: string;
+        service_station_name: string;
+    }
+
+    const handleFormSubmit = (values: FormValues) => {
         if (mode === 'edit') {
-            // Only send modified fields for edit
-            const editedValues = Object.keys(values).reduce((result: any, key) => {
-                if (values[key] !== initialData[key]) {
-                    result[key] = values[key];
+            const editedValues = Object.keys(values).reduce((result: Partial<FormValues>, key) => {
+                if (values[key as keyof FormValues] !== initialData[key as keyof FormValues]) {
+                    result[key as keyof FormValues] = values[key as keyof FormValues];
                 }
                 return result;
             }, {});
@@ -233,7 +238,7 @@ export default function MaintenanceEventForm() {
                     }}
                 >
                     {error
-                        ? error.response?.data?.message || 'An error occurred.'
+                        ? (error as any).response?.data?.message || 'An error occurred.'
                         : mode === 'add'
                             ? 'Maintenance event added successfully!'
                             : 'Maintenance event updated successfully!'}
