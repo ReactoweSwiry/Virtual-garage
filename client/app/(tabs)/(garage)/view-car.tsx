@@ -1,8 +1,13 @@
-
 import React, { useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { View, StyleSheet, ScrollView, Image, useWindowDimensions } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  Image,
+  useWindowDimensions,
+} from 'react-native';
 import {
   Text,
   ActivityIndicator,
@@ -34,7 +39,8 @@ export default function ViewCar() {
   const [sortBy, setSortBy] = useState<SortOption>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [menuVisible, setMenuVisible] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<MaintenanceEvent | null>(null);
+  const [selectedEvent, setSelectedEvent] =
+    useState<MaintenanceEvent | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
   const { data, isPending, error, refetch } = useQuery<
@@ -201,13 +207,29 @@ export default function ViewCar() {
           left={(props) => <List.Icon {...props} icon="car-info" />}
         >
           {[
-            { title: 'Manufacturer', description: car.manufacturer, icon: 'domain' },
+            {
+              title: 'Manufacturer',
+              description: car.manufacturer,
+              icon: 'domain',
+            },
             { title: 'Model', description: car.model, icon: 'car-side' },
-            { title: 'Year', description: car.year?.toString(), icon: 'calendar' },
+            {
+              title: 'Year',
+              description: car.year?.toString(),
+              icon: 'calendar',
+            },
             { title: 'Color', description: car.color, icon: 'palette' },
             { title: 'VIN', description: car.vin, icon: 'barcode' },
-            { title: 'Plate Number', description: car.plate_number, icon: 'card-text' },
-            { title: 'Mileage', description: `${car.mileage} km`, icon: 'speedometer' },
+            {
+              title: 'Plate Number',
+              description: car.plate_number,
+              icon: 'card-text',
+            },
+            {
+              title: 'Mileage',
+              description: `${car.mileage} km`,
+              icon: 'speedometer',
+            },
           ].map((item, index) => (
             <List.Item
               key={index}
@@ -223,10 +245,12 @@ export default function ViewCar() {
           title="Maintenance History"
           left={(props) => <List.Icon {...props} icon="history" />}
         >
-          <View style={[
-            styles.sortContainer,
-            width > 600 ? styles.sortContainerWide : null
-          ]}>
+          <View
+            style={[
+              styles.sortContainer,
+              width > 600 ? styles.sortContainerWide : null,
+            ]}
+          >
             <Menu
               visible={menuVisible}
               onDismiss={() => setMenuVisible(false)}
@@ -236,13 +260,39 @@ export default function ViewCar() {
                 </Button>
               }
             >
-              <Menu.Item onPress={() => { setSortBy('date'); setMenuVisible(false); }} title="Date" />
-              <Menu.Item onPress={() => { setSortBy('cost'); setMenuVisible(false); }} title="Cost" />
-              <Menu.Item onPress={() => { setSortBy('type'); setMenuVisible(false); }} title="Type" />
-              <Menu.Item onPress={() => { setSortBy('action'); setMenuVisible(false); }} title="action" />
+              <Menu.Item
+                onPress={() => {
+                  setSortBy('date');
+                  setMenuVisible(false);
+                }}
+                title="Date"
+              />
+              <Menu.Item
+                onPress={() => {
+                  setSortBy('cost');
+                  setMenuVisible(false);
+                }}
+                title="Cost"
+              />
+              <Menu.Item
+                onPress={() => {
+                  setSortBy('type');
+                  setMenuVisible(false);
+                }}
+                title="Type"
+              />
+              <Menu.Item
+                onPress={() => {
+                  setSortBy('action');
+                  setMenuVisible(false);
+                }}
+                title="action"
+              />
             </Menu>
             <IconButton
-              icon={sortOrder === 'asc' ? 'sort-ascending' : 'sort-descending'}
+              icon={
+                sortOrder === 'asc' ? 'sort-ascending' : 'sort-descending'
+              }
               onPress={toggleSortOrder}
             />
           </View>
@@ -266,7 +316,11 @@ export default function ViewCar() {
                   <View style={styles.iconButtonsContainer}>
                     <IconButton
                       icon="pencil"
-                      onPress={() => router.push(`/maintenance?actionId=${event?.id}&mode=edit`)}
+                      onPress={() =>
+                        router.push(
+                          `/maintenance?actionId=${event?.id}&mode=edit`
+                        )
+                      }
                       style={styles.iconButton}
                     />
                     <IconButton
@@ -276,7 +330,7 @@ export default function ViewCar() {
                     />
                   </View>
                 )}
-                style={{ marginLeft: 8 }}
+                style={{ paddingLeft: 24 }}
               />
               {index < sortedMaintenanceHistory.length - 1 && <Divider />}
             </React.Fragment>
@@ -356,8 +410,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: 24,
   },
   sortContainerWide: {
     justifyContent: 'flex-end',
