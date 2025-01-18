@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import {
   Card,
   Text,
@@ -13,9 +13,6 @@ import {
 import { Locales } from '@/lib';
 import { getCars } from '@/lib/api/queries';
 import { Car } from '@/lib/types/Car';
-
-const { width } = Dimensions.get('window');
-const cardW = (width - 48) / 2;
 
 export default function Garage() {
   const {
@@ -58,9 +55,9 @@ export default function Garage() {
             >
               <Card.Content style={styles.cardContent}>
                 <Text variant="bodyMedium">
-                  {car.name} {car.model}
+                  {car.name} {car.model} | {car.year}
                 </Text>
-                <Text variant="bodySmall">{car.year}</Text>
+                <Text variant="bodySmall">{car.plate_number}</Text>
               </Card.Content>
               <Card.Cover
                 source={{
@@ -107,7 +104,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   cardWrapper: {
-    width: cardW,
+    width: '100%',
     marginBottom: 16,
   },
   card: {
@@ -122,7 +119,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     gap: 4,
     paddingHorizontal: 4,
-    paddingVertical: 12,
+    paddingVertical: 16,
   },
   fab: {
     position: 'absolute',

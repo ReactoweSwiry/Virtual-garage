@@ -1,13 +1,7 @@
-import React, { useState } from 'react';
-import { router, useLocalSearchParams } from 'expo-router';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  Image,
-  useWindowDimensions,
-} from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useState } from 'react';
+import { View, StyleSheet, ScrollView, Image } from 'react-native';
 import {
   Text,
   ActivityIndicator,
@@ -21,9 +15,9 @@ import {
   Menu,
 } from 'react-native-paper';
 
-import MaintenanceDetailsModal from '@/lib/modals/maintenance';
 import { getCarById, deleteCarActionById } from '@/lib/api/queries';
 import EditCarImage from '@/lib/modals/edit-car-image';
+import MaintenanceDetailsModal from '@/lib/modals/maintenance';
 import { Car, MaintenanceEvent } from '@/lib/types/Car';
 
 interface CarResponse {
@@ -35,7 +29,6 @@ type SortOption = 'date' | 'cost' | 'type' | 'action';
 export default function ViewCar() {
   const { id } = useLocalSearchParams();
   const theme = useTheme();
-  const { width } = useWindowDimensions();
   const [sortBy, setSortBy] = useState<SortOption>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [menuVisible, setMenuVisible] = useState(false);
@@ -245,12 +238,7 @@ export default function ViewCar() {
           title="Maintenance History"
           left={(props) => <List.Icon {...props} icon="history" />}
         >
-          <View
-            style={[
-              styles.sortContainer,
-              width > 600 ? styles.sortContainerWide : null,
-            ]}
-          >
+          <View style={[styles.sortContainer]}>
             <Menu
               visible={menuVisible}
               onDismiss={() => setMenuVisible(false)}
@@ -304,7 +292,7 @@ export default function ViewCar() {
                 onPress={() => showEventDetails(event)}
                 left={() => (
                   <Avatar.Icon
-                    size={40}
+                    size={32}
                     icon={getIconForEventType(event.type)}
                     style={[
                       styles.eventIcon,
@@ -330,7 +318,7 @@ export default function ViewCar() {
                     />
                   </View>
                 )}
-                style={{ paddingLeft: 24 }}
+                style={{ paddingLeft: 8 }}
               />
               {index < sortedMaintenanceHistory.length - 1 && <Divider />}
             </React.Fragment>
@@ -339,7 +327,7 @@ export default function ViewCar() {
       </List.Section>
       {isDeleting && (
         <View style={styles.center}>
-          <ActivityIndicator animating={true} size="small" />
+          <ActivityIndicator animating size="small" />
           <Text variant="bodyMedium">Deleting...</Text>
         </View>
       )}
@@ -408,11 +396,8 @@ const styles = StyleSheet.create({
   },
   sortContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     paddingHorizontal: 24,
-  },
-  sortContainerWide: {
-    justifyContent: 'flex-end',
   },
 });

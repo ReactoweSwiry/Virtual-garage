@@ -24,7 +24,7 @@ export default function Profile() {
   const theme = useTheme(); // Access theme properties
   const toggleEdit = () => setIsEditing(!isEditing);
 
-  const handleInputChange = (field, value) => {
+  const handleInputChange = (field: string, value: string) => {
     setProfile((prevProfile) => ({
       ...prevProfile,
       [field]: value,
