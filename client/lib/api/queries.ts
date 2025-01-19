@@ -1,9 +1,15 @@
-import api from './base';
-import { Car } from '@/lib/types/Car';
-import { MaintenanceEvent } from '@/lib/types/Car';
+import { Car, MaintenanceEvent } from '@/lib/types/Car';
 
-export const getCars = async () => {
-  const response = await api.get('cars');
+import api from './base';
+import { CarApiResponse } from '../interfaces/CarApiResponse';
+
+export const getCars = async ({ pageParam }: { pageParam: number }) => {
+  const response = await api.get<CarApiResponse>(`/cars`, {
+    params: {
+      page: pageParam,
+      page_size: 3,
+    },
+  });
   return response.data;
 };
 
