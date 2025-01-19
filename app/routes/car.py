@@ -12,12 +12,19 @@ def car_routes(app: Flask):
     def get_cars():
         session = Session()
         try:
-            cars = session.query(Car).all()
+            page = int(request.args.get('page', 1))
+            page_size = int(request.args.get('page_size', 3))
+
+            cars_query = session.query(Car).limit(page_size).offset((page - 1) * page_size)
+            cars = cars_query.all()
+
+            total_count = session.query(Car).count()
+            total_pages = (total_count + page_size - 1) // page_size
+
             result = []
 
             for car in cars:
                 car_image = None
-
                 if isinstance(car.car_image, (bytes, bytearray)):
                     car_image = convert_blob_to_base64(car.car_image)
 
@@ -29,7 +36,13 @@ def car_routes(app: Flask):
                     'year': car.year,
                     'car_image': car_image
                 })
-            return jsonify(result)
+            return jsonify({
+                'cars': result,
+                'page': page,
+                'page_size': page_size,
+                'total_pages': total_pages,
+                'total_count': total_count
+            })
         finally:
             session.close()
 
@@ -95,5 +108,3 @@ def car_routes(app: Flask):
             return jsonify({'error': f'Car with ID {car_id} not found'}), 404
         finally:
             session.close()
-
-    
