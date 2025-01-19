@@ -8,6 +8,7 @@ import {
   AnimatedFAB,
   Button,
   Surface,
+  IconButton,
 } from 'react-native-paper';
 
 import { Locales } from '@/lib';
@@ -74,15 +75,30 @@ export default function Garage() {
           </View>
         ))}
       </View>
-      <AnimatedFAB
-        icon="plus"
-        label="Label"
-        extended={false}
-        onPress={() => router.push('/new-car')}
-        animateFrom="right"
-        iconMode="static"
-        style={styles.fab}
-      />
+      <View style={styles.bottomContainer}>
+        <View style={styles.paginationContainer}>
+          <IconButton
+            icon="arrow-left"
+            size={18}
+            onPress={() => console.log('Prev')}
+          />
+          <Text variant="bodyMedium">Page 1 of 5</Text>
+          <IconButton
+            icon="arrow-right"
+            size={18}
+            onPress={() => console.log('Next')}
+          />
+        </View>
+        <AnimatedFAB
+          icon="plus"
+          label="Label"
+          extended={false}
+          onPress={() => router.push('/new-car')}
+          animateFrom="right"
+          iconMode="static"
+          style={styles.fab}
+        />
+      </View>
     </Surface>
   );
 }
@@ -105,10 +121,10 @@ const styles = StyleSheet.create({
   },
   cardWrapper: {
     width: '100%',
-    marginBottom: 16,
+    marginBottom: 14,
   },
   card: {
-    height: 180,
+    height: 195,
     overflow: 'hidden',
   },
   cardContent: {
@@ -121,9 +137,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     paddingVertical: 16,
   },
-  fab: {
+  bottomContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 16,
     position: 'absolute',
-    bottom: 16,
-    right: 16,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+
+  paginationContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 8,
+  },
+  pageNumber: {
+    fontWeight: 'bold',
+  },
+  fab: {
+    position: 'relative',
+    bottom: 0,
+    right: 0,
   },
 });
