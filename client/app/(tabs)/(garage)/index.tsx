@@ -17,15 +17,14 @@ import { getCars } from '@/lib/api/queries';
 
 export default function Garage() {
   const [page, setPage] = useState(1);
-
-  const { data, isPending, error, isFetching, isPlaceholderData } =
+  const { data, isPending, error, isPlaceholderData, isFetching } =
     useQuery({
       queryKey: ['cars', page],
       queryFn: () => getCars(page),
       placeholderData: keepPreviousData,
     });
 
-  if (isPending || isFetching) {
+  if (isPending) {
     return (
       <View style={styles.center}>
         <ActivityIndicator animating />
@@ -61,7 +60,7 @@ export default function Garage() {
                 <Text variant="bodySmall">{car.plate_number}</Text>
               </Card.Content>
               <Card.Cover
-                style={{ width: 400, height: 200 }}
+                style={{ width: 395, height: 195 }}
                 source={{
                   uri: car.car_image
                     ? `data:image/jpeg;base64,${car.car_image}`
@@ -83,6 +82,7 @@ export default function Garage() {
             size={18}
             onPress={() => setPage((old) => Math.max(old - 1, 0))}
             disabled={page === 1}
+            loading={isFetching}
           />
           <Text variant="bodyMedium">
             Page {page} of {data.total_pages}
@@ -96,6 +96,7 @@ export default function Garage() {
               }
             }}
             disabled={isPlaceholderData || page >= data.total_pages}
+            loading={isFetching}
           />
         </View>
         <AnimatedFAB
@@ -149,22 +150,17 @@ const styles = StyleSheet.create({
   bottomContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    paddingRight: 16,
+    paddingLeft: 8,
     paddingVertical: 16,
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
   },
-
   paginationContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
-  },
-  pageNumber: {
-    fontWeight: 'bold',
   },
   fab: {
     position: 'relative',

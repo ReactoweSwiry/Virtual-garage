@@ -21,13 +21,13 @@ export default function NewCar() {
 
   const queryClient = useQueryClient();
   const { mutate, isPending, error } = useMutation({
-    mutationKey: ['Cars'],
+    mutationKey: ['cars'],
     mutationFn: addCar,
     onError: () => {
       setIsSnackbarVisible(true);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['Cars'] });
+      queryClient.invalidateQueries({ queryKey: ['cars'] });
     },
   });
 
