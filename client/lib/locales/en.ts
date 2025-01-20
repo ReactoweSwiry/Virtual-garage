@@ -15,6 +15,7 @@ const English = {
   changeLanguage: "Change app's language",
   system: 'System',
   mode: 'Mode',
+  maintenance: 'Maintenance',
   changeMode: 'Switch between light and dark mode',
   lightMode: 'Light',
   darkMode: 'Dark',

@@ -1,6 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { useState } from 'react';
+import { View, StyleSheet } from 'react-native';
 import {
   Card,
   Text,
@@ -8,24 +9,20 @@ import {
   AnimatedFAB,
   Button,
   Surface,
+  IconButton,
 } from 'react-native-paper';
 
 import { Locales } from '@/lib';
 import { getCars } from '@/lib/api/queries';
-import { Car } from '@/lib/types/Car';
-
-const { width } = Dimensions.get('window');
-const cardW = (width - 48) / 2;
 
 export default function Garage() {
-  const {
-    data: cars,
-    isPending,
-    error,
-  } = useQuery<Car[]>({
-    queryKey: ['Cars'],
-    queryFn: getCars,
-  });
+  const [page, setPage] = useState(1);
+  const { data, isPending, error, isPlaceholderData, isFetching } =
+    useQuery({
+      queryKey: ['cars', page],
+      queryFn: () => getCars(page),
+      placeholderData: keepPreviousData,
+    });
 
   if (isPending) {
     return (
@@ -49,7 +46,7 @@ export default function Garage() {
         <Text variant="bodyMedium">{Locales.t('garageTitleText')}</Text>
       </View>
       <View style={styles.grid}>
-        {cars.map((car) => (
+        {data.cars.map((car) => (
           <View key={car.id} style={styles.cardWrapper}>
             <Card
               style={styles.card}
@@ -58,11 +55,12 @@ export default function Garage() {
             >
               <Card.Content style={styles.cardContent}>
                 <Text variant="bodyMedium">
-                  {car.name} {car.model}
+                  {car.name} {car.model} | {car.year}
                 </Text>
-                <Text variant="bodySmall">{car.year}</Text>
+                <Text variant="bodySmall">{car.plate_number}</Text>
               </Card.Content>
               <Card.Cover
+                style={{ width: 395, height: 195 }}
                 source={{
                   uri: car.car_image
                     ? `data:image/jpeg;base64,${car.car_image}`
@@ -77,15 +75,40 @@ export default function Garage() {
           </View>
         ))}
       </View>
-      <AnimatedFAB
-        icon="plus"
-        label="Label"
-        extended={false}
-        onPress={() => router.push('/new-car')}
-        animateFrom="right"
-        iconMode="static"
-        style={styles.fab}
-      />
+      <View style={styles.bottomContainer}>
+        <View style={styles.paginationContainer}>
+          <IconButton
+            icon="arrow-left"
+            size={18}
+            onPress={() => setPage((old) => Math.max(old - 1, 0))}
+            disabled={page === 1}
+            loading={isFetching}
+          />
+          <Text variant="bodyMedium">
+            Page {page} of {data.total_pages}
+          </Text>
+          <IconButton
+            icon="arrow-right"
+            size={18}
+            onPress={() => {
+              if (!isPlaceholderData && page < data.total_pages) {
+                setPage((old) => old + 1);
+              }
+            }}
+            disabled={isPlaceholderData || page >= data.total_pages}
+            loading={isFetching}
+          />
+        </View>
+        <AnimatedFAB
+          icon="plus"
+          label="Label"
+          extended={false}
+          onPress={() => router.push('/new-car')}
+          animateFrom="right"
+          iconMode="static"
+          style={styles.fab}
+        />
+      </View>
     </Surface>
   );
 }
@@ -107,11 +130,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   cardWrapper: {
-    width: cardW,
-    marginBottom: 16,
+    width: '100%',
+    marginBottom: 14,
   },
   card: {
-    height: 180,
+    height: 195,
     overflow: 'hidden',
   },
   cardContent: {
@@ -122,11 +145,26 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     gap: 4,
     paddingHorizontal: 4,
-    paddingVertical: 12,
+    paddingVertical: 16,
+  },
+  bottomContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingRight: 16,
+    paddingLeft: 8,
+    paddingVertical: 16,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  paginationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   fab: {
-    position: 'absolute',
-    bottom: 16,
-    right: 16,
+    position: 'relative',
+    bottom: 0,
+    right: 0,
   },
 });

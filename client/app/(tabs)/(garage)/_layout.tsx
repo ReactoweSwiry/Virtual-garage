@@ -18,6 +18,10 @@ export default function GarageLayout() {
         name="view-car"
         options={{ title: Locales.t('viewCar'), headerShown: false }}
       />
+      <Stack.Screen
+        name="maintenance"
+        options={{ title: Locales.t('maintenance'), headerShown: false }}
+      />
     </Stack>
   );
 }

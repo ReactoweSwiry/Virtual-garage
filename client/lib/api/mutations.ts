@@ -1,6 +1,6 @@
-import api from './base';
 import { Car } from '@/lib/types/Car';
 
+import api from './base';
 
 export const addCar = async (car: Car) => {
   return await api.post('cars', car);
@@ -16,5 +16,3 @@ export const uploadCarImage = async (carId: number, file: File) => {
     },
   });
 };
-
-

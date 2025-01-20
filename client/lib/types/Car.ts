@@ -6,6 +6,7 @@ export type Car = {
   year: string;
   car_image?: string;
 };
+
 export interface MaintenanceEvent {
   id: number;
   action: string;
@@ -16,4 +17,3 @@ export interface MaintenanceEvent {
   description: string;
   cost: number;
 }
-
