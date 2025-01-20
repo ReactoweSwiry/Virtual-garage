@@ -1,5 +1,6 @@
-import api from './base';
 import { Car } from '@/lib/types/Car';
+
+import api from './base';
 
 export const addCar = async (car: Car) => {
   return await api.post('cars', car);

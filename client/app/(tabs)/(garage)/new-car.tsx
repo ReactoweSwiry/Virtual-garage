@@ -39,7 +39,6 @@ export default function NewCar() {
       <Text variant="bodyLarge" style={{ textAlign: 'center' }}>
         Add your car here
       </Text>
-
       <Formik
         initialValues={{
           name: '',

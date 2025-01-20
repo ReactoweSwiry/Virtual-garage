@@ -1,4 +1,3 @@
-import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import {
   Modal,
@@ -9,6 +8,7 @@ import {
   Divider,
   useTheme,
 } from 'react-native-paper';
+
 import { MaintenanceEvent } from '@/lib/types/Car';
 
 interface MaintenanceDetailsModalProps {
