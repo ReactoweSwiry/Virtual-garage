@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Formik } from 'formik';
 import { useState } from 'react';
 import { View } from 'react-native';
@@ -19,11 +19,15 @@ import { Car } from '@/lib/types/Car';
 export default function NewCar() {
   const [isSnackbarVisible, setIsSnackbarVisible] = useState(false);
 
+  const queryClient = useQueryClient();
   const { mutate, isPending, error } = useMutation({
     mutationKey: ['Cars'],
     mutationFn: addCar,
     onError: () => {
       setIsSnackbarVisible(true);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['Cars'] });
     },
   });
 

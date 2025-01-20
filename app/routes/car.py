@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
-from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import NoResultFound
+from sqlalchemy import desc
 
 from ..database import Session
 from ..utils import convert_blob_to_base64
@@ -13,13 +14,11 @@ def car_routes(app: Flask):
         session = Session()
         try:
             page = int(request.args.get('page', 1))
-            page_size = int(request.args.get('page_size', 3))
 
-            cars_query = session.query(Car).limit(page_size).offset((page - 1) * page_size)
+            offset = (page - 1) * 3
+
+            cars_query = session.query(Car).order_by(desc(Car.id)).limit(3).offset(offset)
             cars = cars_query.all()
-
-            total_count = session.query(Car).count()
-            total_pages = (total_count + page_size - 1) // page_size
 
             result = []
 
@@ -36,12 +35,15 @@ def car_routes(app: Flask):
                     'year': car.year,
                     'car_image': car_image
                 })
+
+            total_count = session.query(Car).count()
+            total_pages = (total_count + 2) // 3
+
             return jsonify({
                 'cars': result,
                 'page': page,
-                'page_size': page_size,
-                'total_pages': total_pages,
-                'total_count': total_count
+                'total_count': total_count,
+                'total_pages': total_pages
             })
         finally:
             session.close()

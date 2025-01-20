@@ -1,5 +1,6 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import {
   Card,
@@ -13,35 +14,18 @@ import {
 
 import { Locales } from '@/lib';
 import { getCars } from '@/lib/api/queries';
-import { Car } from '@/lib/types/Car';
-import { CarApiResponse } from '@/lib/interfaces/CarApiResponse';
 
 export default function Garage() {
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    hasPreviousPage,
-    fetchPreviousPage,
-    isFetchingPreviousPage,
-    isPending,
-    error,
-  } = useInfiniteQuery({
-    queryKey: ['cars'],
-    queryFn: getCars,
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) => {
-      const { page, total_pages } = lastPage;
-      return page < total_pages ? page + 1 : undefined;
-    },
-    getPreviousPageParam: (firstPage) => {
-      const { page } = firstPage;
-      return page > 1 ? page - 1 : undefined;
-    },
-  });
+  const [page, setPage] = useState(1);
 
-  if (isPending) {
+  const { data, isPending, error, isFetching, isPlaceholderData } =
+    useQuery({
+      queryKey: ['cars', page],
+      queryFn: () => getCars(page),
+      placeholderData: keepPreviousData,
+    });
+
+  if (isPending || isFetching) {
     return (
       <View style={styles.center}>
         <ActivityIndicator animating />
@@ -57,18 +41,13 @@ export default function Garage() {
     );
   }
 
-  const pageIndex =
-    data.pageParams.length === 1
-      ? (data.pageParams[0] as number)
-      : (data.pageParams[data.pageParams.length - 1] as number);
-
   return (
     <Surface style={styles.container}>
       <View style={styles.title}>
         <Text variant="bodyMedium">{Locales.t('garageTitleText')}</Text>
       </View>
       <View style={styles.grid}>
-        {data.pages[pageIndex - 1].cars.map((car) => (
+        {data.cars.map((car) => (
           <View key={car.id} style={styles.cardWrapper}>
             <Card
               style={styles.card}
@@ -82,6 +61,7 @@ export default function Garage() {
                 <Text variant="bodySmall">{car.plate_number}</Text>
               </Card.Content>
               <Card.Cover
+                style={{ width: 400, height: 200 }}
                 source={{
                   uri: car.car_image
                     ? `data:image/jpeg;base64,${car.car_image}`
@@ -101,15 +81,21 @@ export default function Garage() {
           <IconButton
             icon="arrow-left"
             size={18}
-            onPress={() => fetchPreviousPage()}
-            disabled={!hasPreviousPage || isFetchingPreviousPage}
+            onPress={() => setPage((old) => Math.max(old - 1, 0))}
+            disabled={page === 1}
           />
-          <Text variant="bodyMedium">Page {pageIndex}</Text>
+          <Text variant="bodyMedium">
+            Page {page} of {data.total_pages}
+          </Text>
           <IconButton
             icon="arrow-right"
             size={18}
-            onPress={() => fetchNextPage()}
-            disabled={!hasNextPage || isFetchingNextPage}
+            onPress={() => {
+              if (!isPlaceholderData && page < data.total_pages) {
+                setPage((old) => old + 1);
+              }
+            }}
+            disabled={isPlaceholderData || page >= data.total_pages}
           />
         </View>
         <AnimatedFAB

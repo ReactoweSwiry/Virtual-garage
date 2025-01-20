@@ -3,11 +3,10 @@ import { Car, MaintenanceEvent } from '@/lib/types/Car';
 import api from './base';
 import { CarApiResponse } from '../interfaces/CarApiResponse';
 
-export const getCars = async ({ pageParam }: { pageParam: number }) => {
+export const getCars = async (page: number) => {
   const response = await api.get<CarApiResponse>(`/cars`, {
     params: {
-      page: pageParam,
-      page_size: 3,
+      page,
     },
   });
   return response.data;
