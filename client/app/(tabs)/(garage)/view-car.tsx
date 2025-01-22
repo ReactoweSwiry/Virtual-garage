@@ -1,8 +1,4 @@
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { View, StyleSheet, ScrollView, Image } from 'react-native';
@@ -18,11 +14,10 @@ import {
   Menu,
 } from 'react-native-paper';
 
-import { deleteCarActionById } from '@/lib/api/mutations';
 import { getCarById } from '@/lib/api/queries';
 import UploadImage from '@/lib/modals/UploadImage';
-import ArrowBack from '@/lib/ui/components/ArrowBack';
 import ViewAction from '@/lib/modals/ViewAction';
+import ArrowBack from '@/lib/ui/components/ArrowBack';
 
 type SortOption = 'date' | 'cost' | 'type' | 'action';
 

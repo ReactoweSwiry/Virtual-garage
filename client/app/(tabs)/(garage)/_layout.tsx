@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-import { Locales, StackHeader } from '@/lib';
+import { Locales } from '@/lib';
 
 export default function GarageLayout() {
   return (

@@ -20,10 +20,10 @@ import { Dropdown } from 'react-native-paper-dropdown';
 import * as Yup from 'yup';
 
 import { styles, Locales } from '@/lib';
+import { updateCarActionById } from '@/lib/api/mutations';
 import { getAction } from '@/lib/api/queries';
 import { Action } from '@/lib/types/Car';
 import ArrowBack from '@/lib/ui/components/ArrowBack';
-import { updateCarActionById } from '@/lib/api/mutations';
 
 export default function EditAction() {
   const [isSnackbarVisible, setIsSnackbarVisible] = useState(false);

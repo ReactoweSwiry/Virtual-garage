@@ -1,6 +1,6 @@
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import {
   Modal,
   Portal,
@@ -11,6 +11,7 @@ import {
   IconButton,
   useTheme,
 } from 'react-native-paper';
+
 import { deleteCarActionById } from '../api/mutations';
 import { Action } from '../types/Car';
 
