@@ -3,11 +3,13 @@
  */
 
 const English = {
+  back: 'Go back',
   login: 'Log in',
   signup: 'Sign up',
   profile: 'Profile',
   options: 'Options',
   search: 'Search',
+  submit: 'Submit',
   stackNav: 'Stack Navigation',
   drawerNav: 'Drawer Navigation',
   appearance: 'Appearance',
@@ -15,6 +17,7 @@ const English = {
   changeLanguage: "Change app's language",
   system: 'System',
   mode: 'Mode',
+  newCarAction: 'Add a car action',
   maintenance: 'Maintenance',
   changeMode: 'Switch between light and dark mode',
   lightMode: 'Light',

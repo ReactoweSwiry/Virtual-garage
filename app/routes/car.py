@@ -17,7 +17,8 @@ def car_routes(app: Flask):
 
             offset = (page - 1) * 3
 
-            cars_query = session.query(Car).order_by(desc(Car.id)).limit(3).offset(offset)
+            cars_query = session.query(Car).order_by(
+                desc(Car.id)).limit(3).offset(offset)
             cars = cars_query.all()
 
             result = []
@@ -94,7 +95,6 @@ def car_routes(app: Flask):
         try:
             car = session.query(Car).filter_by(id=car_id).one()
             actions = session.query(Action).filter_by(car_id=car_id).all()
-            print(actions)
             car_image = convert_blob_to_base64(
                 car.car_image) if car.car_image else None
 

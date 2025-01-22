@@ -9,12 +9,12 @@ import {
   useTheme,
 } from 'react-native-paper';
 
-import { MaintenanceEvent } from '@/lib/types/Car';
+import { Action } from '@/lib/types/Car';
 
 interface MaintenanceDetailsModalProps {
   visible: boolean;
   onDismiss: () => void;
-  event: MaintenanceEvent | null;
+  event: Action | null;
 }
 
 export default function MaintenanceDetailsModal({
@@ -25,7 +25,7 @@ export default function MaintenanceDetailsModal({
   const theme = useTheme();
   console.log(event);
   if (!event) return null;
-  const getIconForEventType = (type: MaintenanceEvent['type']) => {
+  const getIconForEventType = (type: Action['type']) => {
     switch (type) {
       case 'repair':
         return 'wrench';

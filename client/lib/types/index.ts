@@ -1,5 +1,5 @@
 /**
- * Types
+ * Global app types
  */
 
 import Color from '@/lib/types/Color';

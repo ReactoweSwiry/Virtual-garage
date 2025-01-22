@@ -51,7 +51,7 @@ export default function Garage() {
             <Card
               style={styles.card}
               mode="contained"
-              onPress={() => router.push(`/view-car?id=${car.id}`)}
+              onPress={() => router.push(`/view-car?carId=${car.id}`)}
             >
               <Card.Content style={styles.cardContent}>
                 <Text variant="bodyMedium">
@@ -60,7 +60,6 @@ export default function Garage() {
                 <Text variant="bodySmall">{car.plate_number}</Text>
               </Card.Content>
               <Card.Cover
-                style={{ width: 395, height: 195 }}
                 source={{
                   uri: car.car_image
                     ? `data:image/jpeg;base64,${car.car_image}`

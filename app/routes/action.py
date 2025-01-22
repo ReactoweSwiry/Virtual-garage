@@ -50,8 +50,8 @@ def action_routes(app: Flask):
                 action=action,
                 details=details,
                 service_station_name=service_station_name,
-                type= type,
-                cost= cost,
+                type=type,
+                cost=cost,
                 date=datetime.strptime(
                     date, '%Y-%m-%d %H:%M:%S') if date else datetime.utcnow()
             )
@@ -68,8 +68,6 @@ def action_routes(app: Flask):
         finally:
             session.close()
 
-
-
     @app.route('/action/<int:action_id>', methods=['PUT'])
     def edit_action(action_id):
         data = request.get_json()
@@ -81,7 +79,8 @@ def action_routes(app: Flask):
             # Update fields if provided
             car_action.action = data.get('action', car_action.action)
             car_action.details = data.get('details', car_action.details)
-            car_action.service_station_name = data.get('service_station_name', car_action.service_station_name)
+            car_action.service_station_name = data.get(
+                'service_station_name', car_action.service_station_name)
             car_action.type = data.get('type', car_action.type)
             car_action.cost = data.get('cost', car_action.cost)
             car_action.date = datetime.strptime(
@@ -101,7 +100,6 @@ def action_routes(app: Flask):
     @app.route('/action/<int:action_id>', methods=['DELETE'])
     def delete_action(action_id):
         session = Session()
-        print(action_id)
         try:
             car_action = session.query(Action).filter_by(id=action_id).one()
             session.delete(car_action)
@@ -115,6 +113,3 @@ def action_routes(app: Flask):
             return jsonify({'error': str(e)}), 500
         finally:
             session.close()
-
-
-    

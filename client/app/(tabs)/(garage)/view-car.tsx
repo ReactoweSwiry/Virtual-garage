@@ -1,4 +1,8 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, Image } from 'react-native';
@@ -15,51 +19,42 @@ import {
   Menu,
 } from 'react-native-paper';
 
-import { getCarById, deleteCarActionById } from '@/lib/api/queries';
-import EditCarImage from '@/lib/modals/edit-car-image';
-import MaintenanceDetailsModal from '@/lib/modals/maintenance';
-import { Car, MaintenanceEvent } from '@/lib/types/Car';
-
-interface CarResponse {
-  car: Car;
-}
+import { deleteCarActionById } from '@/lib/api/mutations';
+import { getCarById } from '@/lib/api/queries';
+import UploadImage from '@/lib/modals/UploadImage';
+import { Action } from '@/lib/types/Car';
+import ArrowBack from '@/lib/ui/components/ArrowBack';
 
 type SortOption = 'date' | 'cost' | 'type' | 'action';
 
 export default function ViewCar() {
-  const { id } = useLocalSearchParams();
   const theme = useTheme();
+  const { carId } = useLocalSearchParams<{ carId: string }>();
+
   const [sortBy, setSortBy] = useState<SortOption>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [menuVisible, setMenuVisible] = useState(false);
-  const [selectedEvent, setSelectedEvent] =
-    useState<MaintenanceEvent | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const { data, isPending, error, refetch } = useQuery<
-    CarResponse | undefined,
-    Error
-  >({
-    queryKey: ['Car', id],
-    queryFn: async () => {
-      const car = await getCarById(id);
-      return { car };
-    },
-    enabled: !!id,
-  });
 
   const {
-    mutate: deleteCarAction,
+    data: carWithActions,
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ['car', carId],
+    queryFn: () => getCarById(carId),
+    enabled: !!carId,
+  });
+
+  const queryClient = useQueryClient();
+  const {
+    mutate,
     isPending: isDeleting,
     error: deleteError,
   } = useMutation({
-    mutationKey: ['DeleteAction'],
-    mutationFn: async (eventId: string) => {
-      await deleteCarActionById(eventId);
-    },
+    mutationKey: ['car'],
+    mutationFn: deleteCarActionById,
     onSuccess: () => {
-      refetch();
-      console.log('Maintenance event deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ['car', carId] });
     },
     onError: (error: Error) => {
       console.error('Delete failed:', error.message);
@@ -82,16 +77,9 @@ export default function ViewCar() {
     );
   }
 
-  if (!data) {
-    return (
-      <View style={styles.center}>
-        <Text variant="bodyMedium">Car not found</Text>
-      </View>
-    );
-  }
+  const { car, actions } = carWithActions;
 
-  const { car, actions }: any = data.car;
-  const maintenanceHistory: MaintenanceEvent[] = [...actions];
+  const maintenanceHistory = [...actions];
   const sortedMaintenanceHistory = maintenanceHistory.sort((a, b) => {
     switch (sortBy) {
       case 'date':
@@ -113,7 +101,7 @@ export default function ViewCar() {
     }
   });
 
-  const getIconForEventType = (type: MaintenanceEvent['type']) => {
+  const getIconForEventType = (type: Action['type']) => {
     switch (type) {
       case 'repair':
         return 'wrench';
@@ -124,10 +112,6 @@ export default function ViewCar() {
       default:
         return 'car';
     }
-  };
-
-  const handleDelete = (eventId: string) => {
-    deleteCarAction(eventId);
   };
 
   const toggleSortOrder = () => {
@@ -147,11 +131,6 @@ export default function ViewCar() {
     }
   };
 
-  const showEventDetails = (event: MaintenanceEvent) => {
-    setSelectedEvent(event);
-    setModalVisible(true);
-  };
-
   return (
     <ScrollView
       style={[
@@ -160,6 +139,7 @@ export default function ViewCar() {
       ]}
     >
       <View style={styles.imageContainer}>
+        <ArrowBack style={styles.arrowBack} />
         <Image
           source={{
             uri: car.car_image
@@ -168,7 +148,7 @@ export default function ViewCar() {
           }}
           style={styles.carImage}
         />
-        <EditCarImage carId={car.id as number} />
+        <UploadImage carId={car.id as number} />
       </View>
       <View style={styles.header}>
         <Text variant="headlineMedium" style={styles.carName}>
@@ -187,10 +167,10 @@ export default function ViewCar() {
         </View>
         <Button
           mode="outlined"
-          onPress={() => router.push(`/maintenance?carId=${id}&mode=add`)}
+          onPress={() => router.push(`/new-action?carId=${carId}`)}
           style={styles.addButton}
         >
-          Add Maintenance
+          New car action
         </Button>
       </View>
 
@@ -202,26 +182,19 @@ export default function ViewCar() {
           {[
             {
               title: 'Manufacturer',
-              description: car.manufacturer,
+              description: car.name,
               icon: 'domain',
             },
             { title: 'Model', description: car.model, icon: 'car-side' },
             {
               title: 'Year',
-              description: car.year?.toString(),
+              description: car.year,
               icon: 'calendar',
             },
-            { title: 'Color', description: car.color, icon: 'palette' },
-            { title: 'VIN', description: car.vin, icon: 'barcode' },
             {
               title: 'Plate Number',
               description: car.plate_number,
               icon: 'card-text',
-            },
-            {
-              title: 'Mileage',
-              description: `${car.mileage} km`,
-              icon: 'speedometer',
             },
           ].map((item, index) => (
             <List.Item
@@ -287,9 +260,9 @@ export default function ViewCar() {
           {sortedMaintenanceHistory.map((event, index) => (
             <React.Fragment key={event.id}>
               <List.Item
-                title={event?.action || event.type || event.description}
+                title={event?.action || event.type}
                 description={`${new Date(event.date).toLocaleDateString()} - $${event?.cost}`}
-                onPress={() => showEventDetails(event)}
+                onPress={() => console.log('open modal here')}
                 left={() => (
                   <Avatar.Icon
                     size={32}
@@ -305,15 +278,13 @@ export default function ViewCar() {
                     <IconButton
                       icon="pencil"
                       onPress={() =>
-                        router.push(
-                          `/maintenance?actionId=${event?.id}&mode=edit`
-                        )
+                        router.push(`/?actionId=${event?.id}&mode=edit`)
                       }
                       style={styles.iconButton}
                     />
                     <IconButton
                       icon="trash-can"
-                      onPress={() => handleDelete(event?.id.toString())}
+                      onPress={() => mutate(event.id)}
                       style={styles.iconButton}
                     />
                   </View>
@@ -325,12 +296,6 @@ export default function ViewCar() {
           ))}
         </List.Accordion>
       </List.Section>
-      {isDeleting && (
-        <View style={styles.center}>
-          <ActivityIndicator animating size="small" />
-          <Text variant="bodyMedium">Deleting...</Text>
-        </View>
-      )}
       {deleteError && (
         <View style={styles.center}>
           <Text variant="bodyMedium" style={{ color: 'red' }}>
@@ -338,11 +303,6 @@ export default function ViewCar() {
           </Text>
         </View>
       )}
-      <MaintenanceDetailsModal
-        visible={modalVisible}
-        onDismiss={() => setModalVisible(false)}
-        event={selectedEvent}
-      />
     </ScrollView>
   );
 }
@@ -354,6 +314,12 @@ const styles = StyleSheet.create({
   addButton: {
     position: 'absolute',
     right: 16,
+  },
+  arrowBack: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    zIndex: 10,
   },
   center: {
     flex: 1,
@@ -398,6 +364,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 12,
   },
 });
