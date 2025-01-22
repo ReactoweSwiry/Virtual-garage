@@ -1,3 +1,4 @@
+import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import {
@@ -10,6 +11,7 @@ import {
   IconButton,
   useTheme,
 } from 'react-native-paper';
+import { deleteCarActionById } from '../api/mutations';
 import { Action } from '../types/Car';
 
 export default function ViewAction({
@@ -21,6 +23,19 @@ export default function ViewAction({
 }) {
   const [visible, setVisible] = useState(false);
   const theme = useTheme();
+
+  const queryClient = useQueryClient();
+  const { mutate, isPending, error } = useMutation({
+    mutationKey: ['car'],
+    mutationFn: deleteCarActionById,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['car'] });
+      setVisible(false);
+    },
+    onError: (error: Error) => {
+      console.error('Delete failed:', error.message);
+    },
+  });
 
   return (
     <>
@@ -39,43 +54,57 @@ export default function ViewAction({
             { backgroundColor: theme.colors.surface },
           ]}
         >
-          <ScrollView>
-            <Text style={styles.modalTitle}>
-              {action.type || action.action}
-            </Text>
-            <Divider style={styles.divider} />
-            <List.Item
-              title="Title"
-              description={action.action}
-              left={(props) => (
-                <List.Icon
-                  {...props}
-                  icon={getIconForEventType(action.type)}
-                />
-              )}
-            />
-            <List.Item
-              title="Date"
-              description={new Date(action.date).toLocaleDateString()}
-              left={(props) => <List.Icon {...props} icon="calendar" />}
-            />
-            <List.Item
-              title="Cost"
-              description={`$${action.cost.toFixed(2)}`}
-              left={(props) => (
-                <List.Icon {...props} icon="currency-usd" />
-              )}
-            />
-            <List.Item
-              title="Description"
-              description={action.details}
-              left={(props) => <List.Icon {...props} icon="text" />}
-            />
-            <Divider style={styles.divider} />
-            <View style={styles.modalActions}>
-              <Button onPress={() => setVisible(false)}>Close</Button>
-            </View>
-          </ScrollView>
+          <Text style={styles.modalTitle}>
+            {action.type || action.action}
+          </Text>
+          <Divider style={styles.divider} />
+          <List.Item
+            title="Title"
+            description={action.action}
+            left={(props) => (
+              <List.Icon
+                {...props}
+                icon={getIconForEventType(action.type)}
+              />
+            )}
+          />
+          <List.Item
+            title="Date"
+            description={new Date(action.date).toLocaleDateString()}
+            left={(props) => <List.Icon {...props} icon="calendar" />}
+          />
+          <List.Item
+            title="Cost"
+            description={`$${action.cost.toFixed(2)}`}
+            left={(props) => <List.Icon {...props} icon="currency-usd" />}
+          />
+          <List.Item
+            title="Description"
+            description={action.details}
+            left={(props) => <List.Icon {...props} icon="text" />}
+          />
+          <Divider style={styles.divider} />
+          <View style={styles.modalActions}>
+            <Button onPress={() => setVisible(false)}>Close</Button>
+            <Button
+              icon="trash-can"
+              onPress={() => mutate(action.id)}
+              loading={isPending}
+              disabled={isPending}
+            >
+              Remove
+            </Button>
+          </View>
+          <Text
+            variant="bodySmall"
+            style={{
+              textAlign: 'center',
+              marginTop: 10,
+              color: theme.colors.error,
+            }}
+          >
+            {error && 'Failed to delete action'}
+          </Text>
         </Modal>
       </Portal>
     </>
@@ -102,7 +131,7 @@ const styles = StyleSheet.create({
   modalActions: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 20,
+    alignItems: 'center',
   },
   eventIcon: {
     marginRight: 8,

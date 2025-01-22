@@ -28,6 +28,7 @@ export default function EditCarImage({ carId }: { carId: number }) {
       uploadCarImage(carId, file),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['car'] });
+      queryClient.invalidateQueries({ queryKey: ['cars'] });
     },
   });
 

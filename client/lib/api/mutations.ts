@@ -33,9 +33,9 @@ export const deleteCarActionById = async (actionId: number) => {
 };
 
 export const updateCarActionById = async (
-  id: string | string[] | undefined,
+  actionId: string,
   values: Partial<Action>
 ) => {
-  const response = await api.put(`/action/${id}`, values);
+  const response = await api.put(`/action/${actionId}`, values);
   return response.data;
 };

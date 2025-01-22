@@ -18,7 +18,7 @@ export const getCarById = async (id: string) => {
   return response.data;
 };
 
-export const getAction = async (id: string | string[] | undefined) => {
-  const response = await api.get<Action>(`/action/${id}`);
+export const getAction = async (actionId: string) => {
+  const response = await api.get<Action>(`/action/${actionId}`);
   return response.data;
 };

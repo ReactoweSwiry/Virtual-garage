@@ -10,6 +10,7 @@ const English = {
   options: 'Options',
   search: 'Search',
   submit: 'Submit',
+  editCarAction: 'Edit car action',
   stackNav: 'Stack Navigation',
   drawerNav: 'Drawer Navigation',
   appearance: 'Appearance',

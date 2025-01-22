@@ -44,22 +44,6 @@ export default function ViewCar() {
     enabled: !!carId,
   });
 
-  const queryClient = useQueryClient();
-  const {
-    mutate,
-    isPending: isDeleting,
-    error: deleteError,
-  } = useMutation({
-    mutationKey: ['car'],
-    mutationFn: deleteCarActionById,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['car', carId] });
-    },
-    onError: (error: Error) => {
-      console.error('Delete failed:', error.message);
-    },
-  });
-
   if (isPending) {
     return (
       <View style={styles.center}>
@@ -274,12 +258,8 @@ export default function ViewCar() {
                   <IconButton
                     icon="pencil"
                     onPress={() =>
-                      router.push(`/?actionId=${action.id}&mode=edit`)
+                      router.push(`/edit-action?actionId=${action.id}`)
                     }
-                  />
-                  <IconButton
-                    icon="trash-can"
-                    onPress={() => mutate(action.id)}
                   />
                 </View>
               )}
@@ -288,13 +268,6 @@ export default function ViewCar() {
           ))}
         </List.Accordion>
       </List.Section>
-      {deleteError && (
-        <View style={styles.center}>
-          <Text variant="bodyMedium" style={{ color: 'red' }}>
-            Error deleting event: {deleteError.message}
-          </Text>
-        </View>
-      )}
     </ScrollView>
   );
 }
