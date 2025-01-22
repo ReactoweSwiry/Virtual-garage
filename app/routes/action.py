@@ -5,7 +5,6 @@ from datetime import datetime
 from ..database import Session
 
 from ..models import Car, Action
-from ..utils import read_data_from_img
 
 
 def action_routes(app: Flask):
@@ -22,13 +21,6 @@ def action_routes(app: Flask):
             return jsonify({'error': str(e)}), 500
         finally:
             session.close()
-
-    @app.route('/action/autocomplete_from_image', methods=['POST'])
-    def autocomplete_from_image():
-        car_action_image = request.files['file']
-        output = read_data_from_img(car_action_image)
-
-        return output
 
     @app.route('/action/<int:car_id>', methods=['POST'])
     def add_action(car_id):

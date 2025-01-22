@@ -3,8 +3,8 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy import desc
 
 from ..database import Session
-from ..utils import convert_blob_to_base64
 from ..models import Car, Action
+from ..utils import process_image, convert_blob_to_base64
 
 
 def car_routes(app: Flask):
@@ -74,13 +74,14 @@ def car_routes(app: Flask):
     @app.route('/car/<int:car_id>', methods=['PATCH'])
     def upload_car_image(car_id):
         car_image = request.files['file']
-        car_image_blob = car_image.read()
+
+        car_image_processed = process_image(car_image)
 
         session = Session()
 
         try:
             car = session.query(Car).filter_by(id=car_id).one()
-            car.car_image = car_image_blob
+            car.car_image = car_image_processed
             session.commit()
             return jsonify({'message': 'Car image updated successfully'})
         except NoResultFound:
