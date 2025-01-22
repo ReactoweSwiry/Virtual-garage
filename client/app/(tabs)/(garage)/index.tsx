@@ -1,7 +1,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, StyleSheet, Dimensions } from 'react-native';
 import {
   Card,
   Text,
@@ -17,10 +17,19 @@ import { getCars } from '@/lib/api/queries';
 
 export default function Garage() {
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(3);
+
+  const { height } = Dimensions.get('window');
+
+  useEffect(() => {
+    const calculatedPageSize = Math.floor(height / 275);
+    setPageSize(calculatedPageSize);
+  }, [height]);
+
   const { data, isPending, error, isPlaceholderData, isFetching } =
     useQuery({
-      queryKey: ['cars', page],
-      queryFn: () => getCars(page),
+      queryKey: ['cars', page, pageSize],
+      queryFn: () => getCars(page, pageSize),
       placeholderData: keepPreviousData,
     });
 
@@ -133,7 +142,7 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   card: {
-    height: 195,
+    height: 190,
     overflow: 'hidden',
   },
   cardContent: {

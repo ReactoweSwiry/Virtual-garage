@@ -14,11 +14,12 @@ def car_routes(app: Flask):
         session = Session()
         try:
             page = int(request.args.get('page', 1))
+            page_size = int(request.args.get('pageSize', 3))
 
-            offset = (page - 1) * 3
+            offset = (page - 1) * page_size
 
             cars_query = session.query(Car).order_by(
-                desc(Car.id)).limit(3).offset(offset)
+                desc(Car.id)).limit(page_size).offset(offset)
             cars = cars_query.all()
 
             result = []
@@ -38,7 +39,7 @@ def car_routes(app: Flask):
                 })
 
             total_count = session.query(Car).count()
-            total_pages = (total_count + 2) // 3
+            total_pages = (total_count + page_size - 1) // page_size
 
             return jsonify({
                 'cars': result,

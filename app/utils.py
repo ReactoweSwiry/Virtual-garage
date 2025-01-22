@@ -20,7 +20,7 @@ def compress_image(fs, quality, max_width):
 
 def process_image(fs):
     compressed_image = compress_image(
-        fs, quality=50, max_width=800)
+        fs, quality=35, max_width=800)
 
     compressed_image_blob = compressed_image.read()
 

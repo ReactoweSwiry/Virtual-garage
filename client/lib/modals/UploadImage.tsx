@@ -23,11 +23,11 @@ export default function EditCarImage({ carId }: { carId: number }) {
 
   const queryClient = useQueryClient();
   const { mutate, isPending, error } = useMutation({
-    mutationKey: ['Car', carId],
+    mutationKey: ['car', carId],
     mutationFn: ({ carId, file }: { carId: number; file: File }) =>
       uploadCarImage(carId, file),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['Car'] });
+      queryClient.invalidateQueries({ queryKey: ['car'] });
     },
   });
 

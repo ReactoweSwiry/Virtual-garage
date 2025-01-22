@@ -4,14 +4,13 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, StyleSheet, ScrollView, Image } from 'react-native';
 import {
   Text,
+  Avatar,
   ActivityIndicator,
   List,
-  Divider,
-  Avatar,
   Chip,
   useTheme,
   Button,
@@ -22,8 +21,8 @@ import {
 import { deleteCarActionById } from '@/lib/api/mutations';
 import { getCarById } from '@/lib/api/queries';
 import UploadImage from '@/lib/modals/UploadImage';
-import { Action } from '@/lib/types/Car';
 import ArrowBack from '@/lib/ui/components/ArrowBack';
+import ViewAction from '@/lib/modals/ViewAction';
 
 type SortOption = 'date' | 'cost' | 'type' | 'action';
 
@@ -101,7 +100,7 @@ export default function ViewCar() {
     }
   });
 
-  const getIconForEventType = (type: Action['type']) => {
+  const getIconForEventType = (type: string) => {
     switch (type) {
       case 'repair':
         return 'wrench';
@@ -112,10 +111,6 @@ export default function ViewCar() {
       default:
         return 'car';
     }
-  };
-
-  const toggleSortOrder = () => {
-    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
 
   const getSortLabel = (option: SortOption) => {
@@ -150,20 +145,16 @@ export default function ViewCar() {
         />
         <UploadImage carId={car.id as number} />
       </View>
-      <View style={styles.header}>
-        <Text variant="headlineMedium" style={styles.carName}>
+      <View style={{ padding: 16 }}>
+        <Text variant="headlineMedium" style={{ fontWeight: 'bold' }}>
           {car.name}
         </Text>
-        <Text variant="titleLarge" style={styles.carModel}>
+        <Text variant="titleLarge" style={{ marginTop: 4 }}>
           {car.model}
         </Text>
         <View style={styles.chipContainer}>
-          <Chip icon="calendar" style={styles.chip}>
-            {car.year}
-          </Chip>
-          <Chip icon="car" style={styles.chip}>
-            {car.plate_number}
-          </Chip>
+          <Chip icon="calendar">{car.year}</Chip>
+          <Chip icon="car">{car.plate_number}</Chip>
         </View>
         <Button
           mode="outlined"
@@ -254,45 +245,46 @@ export default function ViewCar() {
               icon={
                 sortOrder === 'asc' ? 'sort-ascending' : 'sort-descending'
               }
-              onPress={toggleSortOrder}
+              onPress={() =>
+                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+              }
             />
           </View>
-          {sortedMaintenanceHistory.map((event, index) => (
-            <React.Fragment key={event.id}>
-              <List.Item
-                title={event?.action || event.type}
-                description={`${new Date(event.date).toLocaleDateString()} - $${event?.cost}`}
-                onPress={() => console.log('open modal here')}
-                left={() => (
-                  <Avatar.Icon
-                    size={32}
-                    icon={getIconForEventType(event.type)}
-                    style={[
-                      styles.eventIcon,
-                      { backgroundColor: theme.colors.primary },
-                    ]}
+          {sortedMaintenanceHistory.map((action, index) => (
+            <List.Item
+              key={index}
+              title={action.action || action.type}
+              description={`${new Date(action.date).toLocaleDateString()} - $${action.cost}`}
+              left={() => (
+                <Avatar.Icon
+                  size={32}
+                  icon={getIconForEventType(action.type)}
+                  style={[
+                    styles.eventIcon,
+                    { backgroundColor: theme.colors.primary },
+                  ]}
+                />
+              )}
+              right={() => (
+                <View style={styles.iconButtonsContainer}>
+                  <ViewAction
+                    action={action}
+                    getIconForEventType={getIconForEventType}
                   />
-                )}
-                right={() => (
-                  <View style={styles.iconButtonsContainer}>
-                    <IconButton
-                      icon="pencil"
-                      onPress={() =>
-                        router.push(`/?actionId=${event?.id}&mode=edit`)
-                      }
-                      style={styles.iconButton}
-                    />
-                    <IconButton
-                      icon="trash-can"
-                      onPress={() => mutate(event.id)}
-                      style={styles.iconButton}
-                    />
-                  </View>
-                )}
-                style={{ paddingLeft: 8 }}
-              />
-              {index < sortedMaintenanceHistory.length - 1 && <Divider />}
-            </React.Fragment>
+                  <IconButton
+                    icon="pencil"
+                    onPress={() =>
+                      router.push(`/?actionId=${action.id}&mode=edit`)
+                    }
+                  />
+                  <IconButton
+                    icon="trash-can"
+                    onPress={() => mutate(action.id)}
+                  />
+                </View>
+              )}
+              style={{ paddingLeft: 16 }}
+            />
           ))}
         </List.Accordion>
       </List.Section>
@@ -332,33 +324,17 @@ const styles = StyleSheet.create({
   carImage: {
     width: '100%',
     height: 200,
-    resizeMode: 'cover',
-  },
-  header: {
-    padding: 16,
-  },
-  carName: {
-    fontWeight: 'bold',
-  },
-  carModel: {
-    marginTop: 4,
   },
   chipContainer: {
     flexDirection: 'row',
     marginTop: 8,
-  },
-  chip: {
-    marginRight: 8,
+    gap: 8,
   },
   eventIcon: {
-    margin: 8,
+    marginTop: 10,
   },
   iconButtonsContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconButton: {
-    marginLeft: 8,
   },
   sortContainer: {
     flexDirection: 'row',

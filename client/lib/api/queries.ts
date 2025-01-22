@@ -1,12 +1,13 @@
-import { Car, Action, CarWithActions } from '@/lib/types/Car';
+import { Action, CarWithActions } from '@/lib/types/Car';
 
 import api from './base';
 import { CarApiResponse } from '../interfaces/CarApiResponse';
 
-export const getCars = async (page: number) => {
+export const getCars = async (page: number, pageSize: number) => {
   const response = await api.get<CarApiResponse>(`/cars`, {
     params: {
       page,
+      pageSize,
     },
   });
   return response.data;

@@ -28,7 +28,7 @@ export default function NewCar() {
       setIsSnackbarVisible(true);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cars'] });
+      queryClient.invalidateQueries({ queryKey: ['cars'], exact: true });
     },
   });
 
