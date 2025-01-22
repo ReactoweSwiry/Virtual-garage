@@ -1,13 +1,12 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, StyleSheet, ScrollView, Image } from 'react-native';
 import {
   Text,
+  Avatar,
   ActivityIndicator,
   List,
-  Divider,
-  Avatar,
   Chip,
   useTheme,
   Button,
@@ -15,55 +14,29 @@ import {
   Menu,
 } from 'react-native-paper';
 
-import { getCarById, deleteCarActionById } from '@/lib/api/queries';
-import EditCarImage from '@/lib/modals/edit-car-image';
-import MaintenanceDetailsModal from '@/lib/modals/maintenance';
-import { Car, MaintenanceEvent } from '@/lib/types/Car';
-
-interface CarResponse {
-  car: Car;
-}
+import { getCarById } from '@/lib/api/queries';
+import UploadImage from '@/lib/modals/UploadImage';
+import ViewAction from '@/lib/modals/ViewAction';
+import ArrowBack from '@/lib/ui/components/ArrowBack';
 
 type SortOption = 'date' | 'cost' | 'type' | 'action';
 
 export default function ViewCar() {
-  const { id } = useLocalSearchParams();
   const theme = useTheme();
+  const { carId } = useLocalSearchParams<{ carId: string }>();
+
   const [sortBy, setSortBy] = useState<SortOption>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [menuVisible, setMenuVisible] = useState(false);
-  const [selectedEvent, setSelectedEvent] =
-    useState<MaintenanceEvent | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const { data, isPending, error, refetch } = useQuery<
-    CarResponse | undefined,
-    Error
-  >({
-    queryKey: ['Car', id],
-    queryFn: async () => {
-      const car = await getCarById(id);
-      return { car };
-    },
-    enabled: !!id,
-  });
 
   const {
-    mutate: deleteCarAction,
-    isPending: isDeleting,
-    error: deleteError,
-  } = useMutation({
-    mutationKey: ['DeleteAction'],
-    mutationFn: async (eventId: string) => {
-      await deleteCarActionById(eventId);
-    },
-    onSuccess: () => {
-      refetch();
-      console.log('Maintenance event deleted successfully');
-    },
-    onError: (error: Error) => {
-      console.error('Delete failed:', error.message);
-    },
+    data: carWithActions,
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ['car', carId],
+    queryFn: () => getCarById(carId),
+    enabled: !!carId,
   });
 
   if (isPending) {
@@ -82,16 +55,9 @@ export default function ViewCar() {
     );
   }
 
-  if (!data) {
-    return (
-      <View style={styles.center}>
-        <Text variant="bodyMedium">Car not found</Text>
-      </View>
-    );
-  }
+  const { car, actions } = carWithActions;
 
-  const { car, actions }: any = data.car;
-  const maintenanceHistory: MaintenanceEvent[] = [...actions];
+  const maintenanceHistory = [...actions];
   const sortedMaintenanceHistory = maintenanceHistory.sort((a, b) => {
     switch (sortBy) {
       case 'date':
@@ -113,7 +79,7 @@ export default function ViewCar() {
     }
   });
 
-  const getIconForEventType = (type: MaintenanceEvent['type']) => {
+  const getIconForEventType = (type: string) => {
     switch (type) {
       case 'repair':
         return 'wrench';
@@ -124,14 +90,6 @@ export default function ViewCar() {
       default:
         return 'car';
     }
-  };
-
-  const handleDelete = (eventId: string) => {
-    deleteCarAction(eventId);
-  };
-
-  const toggleSortOrder = () => {
-    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
 
   const getSortLabel = (option: SortOption) => {
@@ -147,11 +105,6 @@ export default function ViewCar() {
     }
   };
 
-  const showEventDetails = (event: MaintenanceEvent) => {
-    setSelectedEvent(event);
-    setModalVisible(true);
-  };
-
   return (
     <ScrollView
       style={[
@@ -160,6 +113,7 @@ export default function ViewCar() {
       ]}
     >
       <View style={styles.imageContainer}>
+        <ArrowBack style={styles.arrowBack} />
         <Image
           source={{
             uri: car.car_image
@@ -168,29 +122,25 @@ export default function ViewCar() {
           }}
           style={styles.carImage}
         />
-        <EditCarImage carId={car.id as number} />
+        <UploadImage carId={car.id as number} />
       </View>
-      <View style={styles.header}>
-        <Text variant="headlineMedium" style={styles.carName}>
+      <View style={{ padding: 16 }}>
+        <Text variant="headlineMedium" style={{ fontWeight: 'bold' }}>
           {car.name}
         </Text>
-        <Text variant="titleLarge" style={styles.carModel}>
+        <Text variant="titleLarge" style={{ marginTop: 4 }}>
           {car.model}
         </Text>
         <View style={styles.chipContainer}>
-          <Chip icon="calendar" style={styles.chip}>
-            {car.year}
-          </Chip>
-          <Chip icon="car" style={styles.chip}>
-            {car.plate_number}
-          </Chip>
+          <Chip icon="calendar">{car.year}</Chip>
+          <Chip icon="car">{car.plate_number}</Chip>
         </View>
         <Button
           mode="outlined"
-          onPress={() => router.push(`/maintenance?carId=${id}&mode=add`)}
+          onPress={() => router.push(`/new-action?carId=${carId}`)}
           style={styles.addButton}
         >
-          Add Maintenance
+          New car action
         </Button>
       </View>
 
@@ -202,26 +152,19 @@ export default function ViewCar() {
           {[
             {
               title: 'Manufacturer',
-              description: car.manufacturer,
+              description: car.name,
               icon: 'domain',
             },
             { title: 'Model', description: car.model, icon: 'car-side' },
             {
               title: 'Year',
-              description: car.year?.toString(),
+              description: car.year,
               icon: 'calendar',
             },
-            { title: 'Color', description: car.color, icon: 'palette' },
-            { title: 'VIN', description: car.vin, icon: 'barcode' },
             {
               title: 'Plate Number',
               description: car.plate_number,
               icon: 'card-text',
-            },
-            {
-              title: 'Mileage',
-              description: `${car.mileage} km`,
-              icon: 'speedometer',
             },
           ].map((item, index) => (
             <List.Item
@@ -281,68 +224,45 @@ export default function ViewCar() {
               icon={
                 sortOrder === 'asc' ? 'sort-ascending' : 'sort-descending'
               }
-              onPress={toggleSortOrder}
+              onPress={() =>
+                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+              }
             />
           </View>
-          {sortedMaintenanceHistory.map((event, index) => (
-            <React.Fragment key={event.id}>
-              <List.Item
-                title={event?.action || event.type || event.description}
-                description={`${new Date(event.date).toLocaleDateString()} - $${event?.cost}`}
-                onPress={() => showEventDetails(event)}
-                left={() => (
-                  <Avatar.Icon
-                    size={32}
-                    icon={getIconForEventType(event.type)}
-                    style={[
-                      styles.eventIcon,
-                      { backgroundColor: theme.colors.primary },
-                    ]}
+          {sortedMaintenanceHistory.map((action, index) => (
+            <List.Item
+              key={index}
+              title={action.action || action.type}
+              description={`${new Date(action.date).toLocaleDateString()} - $${action.cost}`}
+              left={() => (
+                <Avatar.Icon
+                  size={32}
+                  icon={getIconForEventType(action.type)}
+                  style={[
+                    styles.eventIcon,
+                    { backgroundColor: theme.colors.primary },
+                  ]}
+                />
+              )}
+              right={() => (
+                <View style={styles.iconButtonsContainer}>
+                  <ViewAction
+                    action={action}
+                    getIconForEventType={getIconForEventType}
                   />
-                )}
-                right={() => (
-                  <View style={styles.iconButtonsContainer}>
-                    <IconButton
-                      icon="pencil"
-                      onPress={() =>
-                        router.push(
-                          `/maintenance?actionId=${event?.id}&mode=edit`
-                        )
-                      }
-                      style={styles.iconButton}
-                    />
-                    <IconButton
-                      icon="trash-can"
-                      onPress={() => handleDelete(event?.id.toString())}
-                      style={styles.iconButton}
-                    />
-                  </View>
-                )}
-                style={{ paddingLeft: 8 }}
-              />
-              {index < sortedMaintenanceHistory.length - 1 && <Divider />}
-            </React.Fragment>
+                  <IconButton
+                    icon="pencil"
+                    onPress={() =>
+                      router.push(`/edit-action?actionId=${action.id}`)
+                    }
+                  />
+                </View>
+              )}
+              style={{ paddingLeft: 16 }}
+            />
           ))}
         </List.Accordion>
       </List.Section>
-      {isDeleting && (
-        <View style={styles.center}>
-          <ActivityIndicator animating size="small" />
-          <Text variant="bodyMedium">Deleting...</Text>
-        </View>
-      )}
-      {deleteError && (
-        <View style={styles.center}>
-          <Text variant="bodyMedium" style={{ color: 'red' }}>
-            Error deleting event: {deleteError.message}
-          </Text>
-        </View>
-      )}
-      <MaintenanceDetailsModal
-        visible={modalVisible}
-        onDismiss={() => setModalVisible(false)}
-        event={selectedEvent}
-      />
     </ScrollView>
   );
 }
@@ -355,6 +275,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 16,
   },
+  arrowBack: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    zIndex: 10,
+  },
   center: {
     flex: 1,
     justifyContent: 'center',
@@ -366,38 +292,22 @@ const styles = StyleSheet.create({
   carImage: {
     width: '100%',
     height: 200,
-    resizeMode: 'cover',
-  },
-  header: {
-    padding: 16,
-  },
-  carName: {
-    fontWeight: 'bold',
-  },
-  carModel: {
-    marginTop: 4,
   },
   chipContainer: {
     flexDirection: 'row',
     marginTop: 8,
-  },
-  chip: {
-    marginRight: 8,
+    gap: 8,
   },
   eventIcon: {
-    margin: 8,
+    marginTop: 10,
   },
   iconButtonsContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconButton: {
-    marginLeft: 8,
   },
   sortContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 12,
   },
 });

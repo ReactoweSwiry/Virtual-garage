@@ -15,6 +15,7 @@ import * as Yup from 'yup';
 import { styles } from '@/lib';
 import { addCar } from '@/lib/api/mutations';
 import { Car } from '@/lib/types/Car';
+import ArrowBack from '@/lib/ui/components/ArrowBack';
 
 export default function NewCar() {
   const [isSnackbarVisible, setIsSnackbarVisible] = useState(false);
@@ -27,14 +28,15 @@ export default function NewCar() {
       setIsSnackbarVisible(true);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cars'] });
+      queryClient.invalidateQueries({ queryKey: ['cars'], exact: true });
     },
   });
 
   return (
     <Surface style={{ ...styles.screen, alignItems: undefined }}>
+      <ArrowBack style={{ position: 'absolute', top: 16, left: 16 }} />
       <Text variant="headlineLarge" style={{ textAlign: 'center' }}>
-        Hi
+        Hi! Thank you for using our app!
       </Text>
       <Text variant="bodyLarge" style={{ textAlign: 'center' }}>
         Add your car here
@@ -142,6 +144,7 @@ export default function NewCar() {
               mode="contained"
               onPress={() => handleSubmit()}
               loading={isPending}
+              disabled={isPending}
             >
               Add Car
             </Button>

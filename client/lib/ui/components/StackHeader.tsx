@@ -18,6 +18,9 @@ interface StackHeaderProps extends AppbarProps {
 const StackHeader = (props: StackHeaderProps) => {
   const [query, setQuery] = React.useState('');
 
+  const isDefaultRoute = props.navProps.route.name === '/';
+  console.log(props.navProps.route.name);
+
   return props.withSearchbar ? (
     <Appbar.Header {...props}>
       <Searchbar
@@ -42,15 +45,9 @@ const StackHeader = (props: StackHeaderProps) => {
     </Appbar.Header>
   ) : (
     <Appbar.Header {...props}>
-      {props.navProps.options.headerLeft
-        ? props.navProps.options.headerLeft({
-            canGoBack: props.navProps.navigation.canGoBack(),
-          })
-        : undefined}
-
-      {props.navProps.back ? (
+      {!isDefaultRoute && (
         <Appbar.BackAction onPress={props.navProps.navigation.goBack} />
-      ) : null}
+      )}
 
       <Appbar.Content
         title={getHeaderTitle(
