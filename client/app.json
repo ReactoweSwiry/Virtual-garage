@@ -29,7 +29,14 @@
       "expo-router",
       "expo-secure-store",
       "expo-font",
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-notifications",
+        {
+          "mode": "development",
+          "iosDisplayInForeground": true
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
