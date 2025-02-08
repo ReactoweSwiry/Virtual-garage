@@ -86,7 +86,7 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.virtualgarage.virtualgarageapp'
+    namespace "com.virtualgarage.virtualgarageapp"
     defaultConfig {
         applicationId 'com.virtualgarage.virtualgarageapp'
         minSdkVersion rootProject.ext.minSdkVersion
