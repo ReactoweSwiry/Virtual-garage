@@ -1,4 +1,3 @@
-import time
 from flask import Blueprint, jsonify, request
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy import desc, func
@@ -19,12 +18,8 @@ def get_cars():
 
         offset = (page - 1) * page_size
 
-        start_time = time.time()
         cars_query = session.query(Car).order_by(
             desc(Car.id)).limit(page_size).offset(offset)
-        end_time = time.time()
-        print(f"Query took {start_time} - {end_time}")
-
         cars = cars_query.all()
 
         result = []
@@ -85,7 +80,6 @@ def add_car():
 @car_routes.route('/car/<int:car_id>', methods=['PATCH'])
 def upload_car_image(car_id):
     car_image = request.files['file']
-
     car_image_processed = process_image(car_image)
 
     session = Session()
