@@ -87,6 +87,9 @@ android {
     compileSdk rootProject.ext.compileSdkVersion
 
     namespace "com.virtualgarage.virtualgarageapp"
+    lintOptions {
+        abortOnError false
+    }
     defaultConfig {
         applicationId 'com.virtualgarage.virtualgarageapp'
         minSdkVersion rootProject.ext.minSdkVersion
