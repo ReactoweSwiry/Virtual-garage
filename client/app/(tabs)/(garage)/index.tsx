@@ -1,7 +1,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { useState, useEffect } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { useState, useEffect, useMemo } from 'react';
+import { View, StyleSheet, Dimensions, Platform } from 'react-native';
 import {
   Card,
   Text,
@@ -15,24 +15,56 @@ import {
 import { Locales } from '@/lib';
 import { getCars } from '@/lib/api/queries';
 
+import * as Notifications from 'expo-notifications';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
 export default function Garage() {
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(3);
-
   const { height } = Dimensions.get('window');
 
+  const pageSize = useMemo(() => Math.floor(height / 275), [height]);
+
+  const { data, isPending, error, isPlaceholderData, isFetching } = useQuery({
+    queryKey: ['cars', page, pageSize],
+    queryFn: () => getCars(page, pageSize),
+    placeholderData: keepPreviousData,
+    enabled: pageSize > 0,
+  });
+
+  // Schedule initial notification only on mobile
   useEffect(() => {
-    const calculatedPageSize = Math.floor(height / 275);
-    setPageSize(calculatedPageSize);
-  }, [height]);
+    if (Platform.OS !== 'web') {
+      Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Look at that notification',
+          body: "I'm so proud of myself!",
+        },
+        trigger: null,
+      });
+    }
+  }, []);
 
-  const { data, isPending, error, isPlaceholderData, isFetching } =
-    useQuery({
-      queryKey: ['cars', page, pageSize],
-      queryFn: () => getCars(page, pageSize),
-      placeholderData: keepPreviousData,
-    });
+  // Schedule notification when data changes (only on mobile)
+  useEffect(() => {
+    if (Platform.OS !== 'web' && data) {
+      Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Cars Loaded',
+          body: 'The car data has been successfully loaded!',
+        },
+        trigger: null,
+      });
+    }
+  }, [data]);
 
+  // Early return for loading state
   if (isPending) {
     return (
       <View style={styles.center}>
@@ -41,6 +73,7 @@ export default function Garage() {
     );
   }
 
+  // Early return for error state
   if (error) {
     return (
       <View style={styles.center}>
@@ -49,6 +82,7 @@ export default function Garage() {
     );
   }
 
+  // Main render
   return (
     <Surface style={styles.container}>
       <View style={styles.title}>
