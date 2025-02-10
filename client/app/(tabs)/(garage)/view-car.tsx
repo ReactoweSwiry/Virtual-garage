@@ -217,7 +217,7 @@ export default function ViewCar() {
                   setSortBy('action');
                   setMenuVisible(false);
                 }}
-                title="action"
+                title="Action"
               />
             </Menu>
             <IconButton
@@ -239,8 +239,10 @@ export default function ViewCar() {
                   size={32}
                   icon={getIconForEventType(action.type)}
                   style={[
-                    styles.eventIcon,
-                    { backgroundColor: theme.colors.primary },
+                    {
+                      backgroundColor: theme.colors.primary,
+                      marginTop: 10,
+                    },
                   ]}
                 />
               )}
@@ -258,7 +260,7 @@ export default function ViewCar() {
                   />
                 </View>
               )}
-              style={{ paddingLeft: 16 }}
+              style={{ paddingLeft: 12, paddingRight: 12 }}
             />
           ))}
         </List.Accordion>
@@ -298,16 +300,13 @@ const styles = StyleSheet.create({
     marginTop: 8,
     gap: 8,
   },
-  eventIcon: {
-    marginTop: 10,
-  },
   iconButtonsContainer: {
     flexDirection: 'row',
   },
   sortContainer: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 12,
+    marginRight: 12,
   },
 });

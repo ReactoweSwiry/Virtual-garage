@@ -1,10 +1,13 @@
 from flask import Flask
 from flask_cors import CORS
+from sqlalchemy.orm import DeclarativeBase
 
 from .database import engine
 from .routes import routes
 
-from .models import Base
+
+class Base(DeclarativeBase):
+    pass
 
 
 def create_app():

@@ -5,5 +5,5 @@ from .action import action_routes
 
 
 def routes(app: Flask):
-    car_routes(app)
-    action_routes(app)
+    app.register_blueprint(car_routes)
+    app.register_blueprint(action_routes)
