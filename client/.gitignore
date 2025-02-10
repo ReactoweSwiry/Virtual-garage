@@ -111,5 +111,3 @@ yarn-error.*
 *.tsbuildinfo
 
 # @end expo-cli
-
-package-lock.json
