@@ -1,20 +1,19 @@
 {
-    "cli": {
-      "version": ">= 0.40.0",
-      "promptToConfigurePushNotifications": true,
-      "appVersionSource": "remote"
-    },
-    "build": {
-      "development": {
+  "cli": {
+    "version": ">= 0.40.0",
+    "promptToConfigurePushNotifications": true,
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
       "developmentClient": true,
       "distribution": "internal"
-      },
-      "preview": {
-        "distribution": "internal"
-      },
-      "production": {
-        "autoIncrement": true
-      }
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {
+      "autoIncrement": true
     }
+  }
 }
-  

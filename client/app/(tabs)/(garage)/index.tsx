@@ -31,12 +31,13 @@ export default function Garage() {
 
   const pageSize = useMemo(() => Math.floor(height / 275), [height]);
 
-  const { data, isPending, error, isPlaceholderData, isFetching } = useQuery({
-    queryKey: ['cars', page, pageSize],
-    queryFn: () => getCars(page, pageSize),
-    placeholderData: keepPreviousData,
-    enabled: pageSize > 0,
-  });
+  const { data, isPending, error, isPlaceholderData, isFetching } =
+    useQuery({
+      queryKey: ['cars', page, pageSize],
+      queryFn: () => getCars(page, pageSize),
+      placeholderData: keepPreviousData,
+      enabled: pageSize > 0,
+    });
 
   // Schedule initial notification only on mobile
   useEffect(() => {
@@ -67,18 +68,22 @@ export default function Garage() {
   // Early return for loading state
   if (isPending) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator animating />
-      </View>
+      <Surface style={styles.container}>
+        <View style={styles.center}>
+          <ActivityIndicator animating />
+        </View>
+      </Surface>
     );
   }
 
   // Early return for error state
   if (error) {
     return (
-      <View style={styles.center}>
-        <Text variant="bodyMedium">Something went wrong, try again</Text>
-      </View>
+      <Surface style={styles.container}>
+        <View style={styles.center}>
+          <Text variant="bodyMedium">Something went wrong, try again</Text>
+        </View>
+      </Surface>
     );
   }
 
