@@ -22,7 +22,8 @@
       }
     },
     "android": {
-      "package": "com.virtualgarage.virtualgarageapp"
+      "package": "com.virtualgarage.virtualgarageapp",
+      "permissions": ["SCHEDULE_EXACT_ALARM"]
     },
     "web": {
       "bundler": "metro",

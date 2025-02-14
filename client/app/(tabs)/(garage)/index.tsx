@@ -41,28 +41,43 @@ export default function Garage() {
   // Schedule initial notification only on mobile
   useEffect(() => {
     if (Platform.OS !== 'web') {
-      Notifications.scheduleNotificationAsync({
-        content: {
-          title: 'Look at that notification',
-          body: "I'm so proud of myself!",
-        },
-        trigger: null,
-      });
+      scheduleMultipleNotifications()
     }
   }, []);
+  async function scheduleMultipleNotifications() {
+    const now = new Date();
+    now.setSeconds(0);
 
-  // Schedule notification when data changes (only on mobile)
-  useEffect(() => {
-    if (Platform.OS !== 'web' && data) {
-      Notifications.scheduleNotificationAsync({
+    for (let i = 1; i <= 6; i++) { // Schedule 6 notifications (next 30 mins)
+      const trigger = new Date(now);
+      trigger.setMinutes(Math.ceil(trigger.getMinutes() / 5) * 5 + i * 5); // Next even 5-minute mark
+
+      await Notifications.scheduleNotificationAsync({
         content: {
-          title: 'Cars Loaded',
-          body: 'The car data has been successfully loaded!',
+          title: '🔔 Test Notification',
+          body: `Scheduled for ${trigger.toLocaleTimeString()}`,
         },
-        trigger: null,
+        trigger: { type: 'date', timestamp: trigger.getTime() },
       });
+
+      console.log(`Scheduled notification for: ${triggerTime.toLocaleTimeString()}`);
     }
-  }, [data]);
+  }
+  // Schedule notification when data changes (only on mobile)
+  // useEffect(() => {
+  //   if (Platform.OS !== 'web' && data) {
+  //     const triggerDate = new Date();
+  //     triggerDate.setSeconds(triggerDate.getSeconds() + 10); // 10 seconds from now
+
+  //     Notifications.scheduleNotificationAsync({
+  //       content: {
+  //         title: 'Cars Loaded',
+  //         body: 'The car data has been successfully loaded!',
+  //       },
+  //       trigger: { date: triggerDate }, // Show notification at a specific date and time
+  //     });
+  //   }
+  // }, [data]);
 
   // Early return for loading state
   if (isPending) {
