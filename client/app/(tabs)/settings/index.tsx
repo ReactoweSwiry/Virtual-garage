@@ -9,7 +9,6 @@ import {
   IconButton,
   Snackbar,
   Icon,
-  Text,
 } from 'react-native-paper';
 
 import {
@@ -20,7 +19,6 @@ import {
   LoadingIndicator,
   Locales,
   Setting,
-  styles,
 } from '@/lib';
 
 const Settings = () => {
@@ -281,11 +279,6 @@ const Settings = () => {
           </List.AccordionGroup>
         </Surface>
       )}
-
-      <Surface elevation={0} style={styles.screen}>
-        <Text variant="bodyMedium">Here add rest of the settings</Text>
-      </Surface>
-
       <Button
         mode="contained"
         style={{ margin: 16 }}

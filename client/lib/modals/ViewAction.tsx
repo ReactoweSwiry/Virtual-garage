@@ -1,4 +1,3 @@
-import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
@@ -12,7 +11,8 @@ import {
   useTheme,
 } from 'react-native-paper';
 
-import { Action } from '../types/Car';
+import { useActionStore } from '../api/store/ActionStore';
+import { Action } from '../api/types';
 
 export default function ViewAction({
   action,
@@ -22,19 +22,9 @@ export default function ViewAction({
   getIconForEventType: (type: string) => string;
 }) {
   const [visible, setVisible] = useState(false);
-  const theme = useTheme();
 
-  const queryClient = useQueryClient();
-  const { mutate, isPending, error } = useMutation({
-    mutationKey: ['car'],
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['car'] });
-      setVisible(false);
-    },
-    onError: (error: Error) => {
-      console.error('Delete failed:', error.message);
-    },
-  });
+  const theme = useTheme();
+  const { removeAction } = useActionStore();
 
   return (
     <>
@@ -74,7 +64,7 @@ export default function ViewAction({
           />
           <List.Item
             title="Cost"
-            description={`$${action.cost.toFixed(2)}`}
+            description={action.cost}
             left={(props) => <List.Icon {...props} icon="currency-usd" />}
           />
           <List.Item
@@ -84,26 +74,14 @@ export default function ViewAction({
           />
           <Divider style={styles.divider} />
           <View style={styles.modalActions}>
-            <Button onPress={() => setVisible(false)}>Close</Button>
             <Button
               icon="trash-can"
-              onPress={() => mutate(action.id)}
-              loading={isPending}
-              disabled={isPending}
+              onPress={() => removeAction(action.id)}
             >
               Remove
             </Button>
+            <Button onPress={() => setVisible(false)}>Close</Button>
           </View>
-          <Text
-            variant="bodySmall"
-            style={{
-              textAlign: 'center',
-              marginTop: 10,
-              color: theme.colors.error,
-            }}
-          >
-            {error && 'Failed to delete action'}
-          </Text>
         </Modal>
       </Portal>
     </>

@@ -9,7 +9,7 @@ import {
   Surface,
 } from 'react-native-paper';
 
-import { useCarStore } from '@/lib/api/store/carStore';
+import { useCarStore } from '@/lib/api/store/CarStore';
 
 export default function Garage() {
   const { cars, getCars } = useCarStore();
@@ -105,6 +105,6 @@ const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     bottom: 16,
-    right: 16,
+    right: 24,
   },
 });

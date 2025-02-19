@@ -12,8 +12,8 @@ import {
   Menu,
 } from 'react-native-paper';
 
-import { useActionStore } from '@/lib/api/store/actionStore';
-import { useCarStore } from '@/lib/api/store/carStore';
+import { useActionStore } from '@/lib/api/store/ActionStore';
+import { useCarStore } from '@/lib/api/store/CarStore';
 import UploadImage from '@/lib/modals/UploadImage';
 import ViewAction from '@/lib/modals/ViewAction';
 import ArrowBack from '@/lib/ui/components/ArrowBack';
@@ -221,7 +221,7 @@ export default function ViewCar() {
                   <IconButton
                     icon="pencil"
                     onPress={() =>
-                      router.push(`/edit-action?actionId=${action.id}`)
+                      router.push(`/update-action?actionId=${action.id}`)
                     }
                   />
                 </View>

@@ -1,9 +1,8 @@
 import { useLocalSearchParams } from 'expo-router';
 import { Formik } from 'formik';
 import { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import {
-  ActivityIndicator,
   Button,
   Surface,
   TextInput,
@@ -15,58 +14,21 @@ import { Dropdown } from 'react-native-paper-dropdown';
 import * as Yup from 'yup';
 
 import { styles, Locales } from '@/lib';
-import { getAction } from '@/lib/api/queries';
-import { Action } from '@/lib/types/Car';
+import { useActionStore } from '@/lib/api/store/ActionStore';
+import { Action } from '@/lib/api/types';
 import ArrowBack from '@/lib/ui/components/ArrowBack';
 
-export default function EditAction() {
+export default function UpdateAction() {
   const [isSnackbarVisible, setIsSnackbarVisible] = useState(false);
+  const [error, setError] = useState('');
+
   const { actionId } = useLocalSearchParams<{ actionId: string }>();
+  const { getAction, updateAction } = useActionStore();
 
-  const queryClient = useQueryClient();
+  const action = getAction(actionId);
 
-  const {
-    data: action,
-    isPending,
-    error,
-  } = useQuery({
-    queryKey: ['car', actionId],
-    enabled: !!actionId,
-  });
-
-  const {
-    mutate,
-    isPending: isUpdatePending,
-    error: updateError,
-  } = useMutation({
-    mutationKey: ['car', actionId],
-    mutationFn: (values: Partial<Action>) =>
-      updateCarActionById(actionId, values),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['car'],
-      });
-      setIsSnackbarVisible(true);
-    },
-    onError: () => {
-      setIsSnackbarVisible(true);
-    },
-  });
-
-  if (isPending) {
-    return (
-      <View style={styleSheetStyles.center}>
-        <ActivityIndicator animating size="large" />
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styleSheetStyles.center}>
-        <Text variant="bodyMedium">Something went wrong, try again</Text>
-      </View>
-    );
+  if (!action) {
+    return;
   }
 
   return (
@@ -81,10 +43,21 @@ export default function EditAction() {
           details: action.details,
           cost: action.cost,
           type: action.type,
-          service_station_name: action.service_station_name || '',
+          serviceStation: action.serviceStation || '',
         }}
         enableReinitialize
-        onSubmit={(values: Partial<Action>) => mutate(values)}
+        onSubmit={(values: Partial<Action>, { setSubmitting }) => {
+          try {
+            updateAction(actionId, values);
+            setIsSnackbarVisible(true);
+          } catch (error) {
+            console.error(error);
+            setError('Something went wrong, please try again');
+            setIsSnackbarVisible(true);
+          } finally {
+            setSubmitting(false);
+          }
+        }}
         validationSchema={Yup.object().shape({
           action: Yup.string()
             .min(2, 'Too Short!')
@@ -100,7 +73,7 @@ export default function EditAction() {
               'Invalid type'
             )
             .required('Please select the type'),
-          service_station_name: Yup.string().max(50, 'Too Long!'),
+          serviceStation: Yup.string().max(50, 'Too Long!'),
         })}
       >
         {({
@@ -110,6 +83,7 @@ export default function EditAction() {
           values,
           errors,
           touched,
+          isSubmitting,
           setFieldValue,
         }) => (
           <>
@@ -163,17 +137,14 @@ export default function EditAction() {
             <Surface elevation={0}>
               <TextInput
                 mode="outlined"
-                label="Service Station Name"
-                value={values.service_station_name}
-                error={!!errors.service_station_name}
-                onBlur={handleBlur('service_station_name')}
-                onChangeText={handleChange('service_station_name')}
+                label="Service Station"
+                value={values.serviceStation}
+                error={!!errors.serviceStation}
+                onBlur={handleBlur('serviceStation')}
+                onChangeText={handleChange('serviceStation')}
               />
-              <HelperText
-                type="error"
-                visible={!!errors.service_station_name}
-              >
-                {errors.service_station_name}
+              <HelperText type="error" visible={!!errors.serviceStation}>
+                {errors.serviceStation}
               </HelperText>
             </Surface>
 
@@ -202,8 +173,8 @@ export default function EditAction() {
             <Button
               mode="contained"
               onPress={() => handleSubmit()}
-              loading={isUpdatePending}
-              disabled={isUpdatePending}
+              loading={isSubmitting}
+              disabled={isSubmitting}
             >
               {Locales.t('submit')}
             </Button>
@@ -213,9 +184,6 @@ export default function EditAction() {
       {isSnackbarVisible && (
         <View
           style={{
-            position: 'absolute',
-            bottom: 0,
-            width: '85%',
             zIndex: 1000,
             alignItems: 'center',
             justifyContent: 'center',
@@ -229,21 +197,10 @@ export default function EditAction() {
               onPress: () => setIsSnackbarVisible(false),
             }}
           >
-            {updateError
-              ? (updateError as any).response?.data?.message ||
-                'An error occurred.'
-              : 'Action updated successfully!'}
+            {error ? error : 'Action updated successfully!'}
           </Snackbar>
         </View>
       )}
     </Surface>
   );
 }
-
-const styleSheetStyles = StyleSheet.create({
-  center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});

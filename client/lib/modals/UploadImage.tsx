@@ -9,7 +9,7 @@ import {
   Button,
 } from 'react-native-paper';
 
-import { useCarStore } from '../api/store/carStore';
+import { useCarStore } from '../api/store/CarStore';
 import { Locales } from '../locales';
 
 export default function UploadImage({ carId }: { carId: string }) {

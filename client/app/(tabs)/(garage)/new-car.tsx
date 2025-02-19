@@ -11,7 +11,7 @@ import {
 import * as Yup from 'yup';
 
 import { styles } from '@/lib';
-import { useCarStore } from '@/lib/api/store/carStore';
+import { useCarStore } from '@/lib/api/store/CarStore';
 import ArrowBack from '@/lib/ui/components/ArrowBack';
 
 export default function NewCar() {

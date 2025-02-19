@@ -24,8 +24,8 @@ export default function GarageLayout() {
         options={{ title: Locales.t('new-action') }}
       />
       <Stack.Screen
-        name="edit-action"
-        options={{ title: Locales.t('edit-action') }}
+        name="update-action"
+        options={{ title: Locales.t('update-action') }}
       />
     </Stack>
   );

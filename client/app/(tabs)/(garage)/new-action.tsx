@@ -1,4 +1,3 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
 import { Formik } from 'formik';
 import { useState } from 'react';
@@ -15,24 +14,15 @@ import { Dropdown } from 'react-native-paper-dropdown';
 import * as Yup from 'yup';
 
 import { styles, Locales } from '@/lib';
-import { Action } from '@/lib/types/Car';
+import { useActionStore } from '@/lib/api/store/ActionStore';
 import ArrowBack from '@/lib/ui/components/ArrowBack';
 
 export default function NewAction() {
   const [isSnackbarVisible, setIsSnackbarVisible] = useState(false);
-  const { carId } = useLocalSearchParams<{ carId: string }>();
+  const [error, setError] = useState<string | null>(null);
 
-  const queryClient = useQueryClient();
-  const { mutate, isPending, error } = useMutation({
-    mutationKey: ['car'],
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['car'] });
-      setIsSnackbarVisible(true);
-    },
-    onError: () => {
-      setIsSnackbarVisible(true);
-    },
-  });
+  const { carId } = useLocalSearchParams<{ carId: string }>();
+  const { addAction } = useActionStore();
 
   return (
     <Surface style={{ ...styles.screen, alignItems: undefined }}>
@@ -49,7 +39,23 @@ export default function NewAction() {
           service_station_name: '',
         }}
         enableReinitialize
-        onSubmit={(values: Omit<Action, 'id' | 'date'>) => mutate(values)}
+        onSubmit={(values, { setSubmitting, resetForm }) => {
+          try {
+            addAction({
+              ...values,
+              carId,
+              date: new Date().toISOString(),
+            });
+            setIsSnackbarVisible(true);
+            resetForm();
+          } catch (error) {
+            console.error(error);
+            setError('An error occurred while adding the action.');
+            setIsSnackbarVisible(true);
+          } finally {
+            setSubmitting(false);
+          }
+        }}
         validationSchema={Yup.object().shape({
           action: Yup.string()
             .min(2, 'Too Short!')
@@ -76,6 +82,7 @@ export default function NewAction() {
           errors,
           touched,
           setFieldValue,
+          isSubmitting,
         }) => (
           <>
             <Surface elevation={0}>
@@ -168,8 +175,8 @@ export default function NewAction() {
             <Button
               mode="contained"
               onPress={() => handleSubmit()}
-              loading={isPending}
-              disabled={isPending}
+              loading={isSubmitting}
+              disabled={isSubmitting}
             >
               {Locales.t('submit')}
             </Button>
@@ -179,9 +186,6 @@ export default function NewAction() {
       {isSnackbarVisible && (
         <View
           style={{
-            position: 'absolute',
-            bottom: 0,
-            width: '85%',
             zIndex: 1000,
             alignItems: 'center',
             justifyContent: 'center',
@@ -195,10 +199,7 @@ export default function NewAction() {
               onPress: () => setIsSnackbarVisible(false),
             }}
           >
-            {error
-              ? (error as any).response?.data?.message ||
-                'An error occurred.'
-              : 'Action added successfully!'}
+            {error || 'Action added successfully!'}
           </Snackbar>
         </View>
       )}

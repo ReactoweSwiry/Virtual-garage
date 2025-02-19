@@ -14,6 +14,6 @@ export type Action = {
   type: string;
   cost: number;
   details?: string;
-  service_station_name?: string;
+  serviceStation?: string;
   date: string;
 };

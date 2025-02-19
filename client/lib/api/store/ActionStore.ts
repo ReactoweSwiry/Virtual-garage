@@ -16,7 +16,7 @@ const saveActionsToStorage = async (actions: Action[]) => {
 type ActionStore = {
   actions: Action[];
   addAction: (action: Omit<Action, 'id'>) => void;
-  updateAction: (action: Action) => void;
+  updateAction: (actionId: string, action: Partial<Action>) => void;
   removeAction: (actionId: string) => void;
   getActions: () => void;
   getActionsById: (carId: string) => Action[];
@@ -46,11 +46,12 @@ export const useActionStore = create<ActionStore>((set, get) => ({
       return { actions: newActions };
     });
   },
-  updateAction: (updatedAction) => {
+  updateAction: (actionId, updatedAction) => {
     set((state) => {
       const newActions = state.actions.map((action) =>
-        action.id === updatedAction.id ? updatedAction : action
+        action.id === actionId ? { ...action, ...updatedAction } : action
       );
+      console.log(newActions);
       saveActionsToStorage(newActions);
       return { actions: newActions };
     });
