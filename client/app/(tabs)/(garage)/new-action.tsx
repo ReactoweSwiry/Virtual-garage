@@ -15,7 +15,6 @@ import { Dropdown } from 'react-native-paper-dropdown';
 import * as Yup from 'yup';
 
 import { styles, Locales } from '@/lib';
-import { addAction } from '@/lib/api/mutations';
 import { Action } from '@/lib/types/Car';
 import ArrowBack from '@/lib/ui/components/ArrowBack';
 
@@ -26,8 +25,6 @@ export default function NewAction() {
   const queryClient = useQueryClient();
   const { mutate, isPending, error } = useMutation({
     mutationKey: ['car'],
-    mutationFn: (values: Omit<Action, 'id' | 'date'>) =>
-      addAction(carId, values),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['car'] });
       setIsSnackbarVisible(true);

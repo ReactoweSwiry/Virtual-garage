@@ -1,11 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { View, StyleSheet, ScrollView, Image } from 'react-native';
 import {
   Text,
   Avatar,
-  ActivityIndicator,
   List,
   Chip,
   useTheme,
@@ -14,7 +12,8 @@ import {
   Menu,
 } from 'react-native-paper';
 
-import { getCarById } from '@/lib/api/queries';
+import { useActionStore } from '@/lib/api/store/actionStore';
+import { useCarStore } from '@/lib/api/store/carStore';
 import UploadImage from '@/lib/modals/UploadImage';
 import ViewAction from '@/lib/modals/ViewAction';
 import ArrowBack from '@/lib/ui/components/ArrowBack';
@@ -29,36 +28,25 @@ export default function ViewCar() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [menuVisible, setMenuVisible] = useState(false);
 
-  const {
-    data: carWithActions,
-    isPending,
-    error,
-  } = useQuery({
-    queryKey: ['car', carId],
-    queryFn: () => getCarById(carId),
-    enabled: !!carId,
-  });
+  const { getCar } = useCarStore();
+  const { getActions, getActionsById } = useActionStore();
 
-  if (isPending) {
+  useMemo(() => {
+    getActions();
+  }, [getActions]);
+
+  const car = getCar(carId);
+  const actions = getActionsById(carId);
+
+  if (!car) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator animating size="large" />
+        <Text variant="bodyMedium">Car not found.</Text>
       </View>
     );
   }
 
-  if (error) {
-    return (
-      <View style={styles.center}>
-        <Text variant="bodyMedium">Something went wrong, try again</Text>
-      </View>
-    );
-  }
-
-  const { car, actions } = carWithActions;
-
-  const maintenanceHistory = [...actions];
-  const sortedMaintenanceHistory = maintenanceHistory.sort((a, b) => {
+  const sortedActions = [...actions].sort((a, b) => {
     switch (sortBy) {
       case 'date':
         return sortOrder === 'asc'
@@ -116,13 +104,11 @@ export default function ViewCar() {
         <ArrowBack style={styles.arrowBack} />
         <Image
           source={{
-            uri: car.car_image
-              ? `data:image/jpeg;base64,${car.car_image}`
-              : 'https://picsum.photos/200',
+            uri: car.carImage ? car.carImage : 'https://picsum.photos/200',
           }}
           style={styles.carImage}
         />
-        <UploadImage carId={car.id as number} />
+        <UploadImage carId={car.id} />
       </View>
       <View style={{ padding: 16 }}>
         <Text variant="headlineMedium" style={{ fontWeight: 'bold' }}>
@@ -133,7 +119,7 @@ export default function ViewCar() {
         </Text>
         <View style={styles.chipContainer}>
           <Chip icon="calendar">{car.year}</Chip>
-          <Chip icon="car">{car.plate_number}</Chip>
+          <Chip icon="car">{car.plateNumber}</Chip>
         </View>
         <Button
           mode="outlined"
@@ -163,7 +149,7 @@ export default function ViewCar() {
             },
             {
               title: 'Plate Number',
-              description: car.plate_number,
+              description: car.plateNumber,
               icon: 'card-text',
             },
           ].map((item, index) => (
@@ -181,7 +167,7 @@ export default function ViewCar() {
           title="Maintenance History"
           left={(props) => <List.Icon {...props} icon="history" />}
         >
-          <View style={[styles.sortContainer]}>
+          <View style={styles.sortContainer}>
             <Menu
               visible={menuVisible}
               onDismiss={() => setMenuVisible(false)}
@@ -191,34 +177,16 @@ export default function ViewCar() {
                 </Button>
               }
             >
-              <Menu.Item
-                onPress={() => {
-                  setSortBy('date');
-                  setMenuVisible(false);
-                }}
-                title="Date"
-              />
-              <Menu.Item
-                onPress={() => {
-                  setSortBy('cost');
-                  setMenuVisible(false);
-                }}
-                title="Cost"
-              />
-              <Menu.Item
-                onPress={() => {
-                  setSortBy('type');
-                  setMenuVisible(false);
-                }}
-                title="Type"
-              />
-              <Menu.Item
-                onPress={() => {
-                  setSortBy('action');
-                  setMenuVisible(false);
-                }}
-                title="Action"
-              />
+              {['date', 'cost', 'type', 'action'].map((option) => (
+                <Menu.Item
+                  key={option}
+                  onPress={() => {
+                    setSortBy(option as SortOption);
+                    setMenuVisible(false);
+                  }}
+                  title={getSortLabel(option as SortOption)}
+                />
+              ))}
             </Menu>
             <IconButton
               icon={
@@ -229,7 +197,7 @@ export default function ViewCar() {
               }
             />
           </View>
-          {sortedMaintenanceHistory.map((action, index) => (
+          {sortedActions.map((action, index) => (
             <List.Item
               key={index}
               title={action.action || action.type}
@@ -238,12 +206,10 @@ export default function ViewCar() {
                 <Avatar.Icon
                   size={32}
                   icon={getIconForEventType(action.type)}
-                  style={[
-                    {
-                      backgroundColor: theme.colors.primary,
-                      marginTop: 10,
-                    },
-                  ]}
+                  style={{
+                    backgroundColor: theme.colors.primary,
+                    marginTop: 10,
+                  }}
                 />
               )}
               right={() => (
@@ -274,6 +240,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   addButton: {
+    marginTop: 16,
     position: 'absolute',
     right: 16,
   },

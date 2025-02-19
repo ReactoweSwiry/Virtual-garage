@@ -12,7 +12,6 @@ import {
   useTheme,
 } from 'react-native-paper';
 
-import { deleteCarActionById } from '../api/mutations';
 import { Action } from '../types/Car';
 
 export default function ViewAction({
@@ -28,7 +27,6 @@ export default function ViewAction({
   const queryClient = useQueryClient();
   const { mutate, isPending, error } = useMutation({
     mutationKey: ['car'],
-    mutationFn: deleteCarActionById,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['car'] });
       setVisible(false);

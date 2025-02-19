@@ -1,7 +1,5 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Formik } from 'formik';
 import { useState } from 'react';
-import { View } from 'react-native';
 import {
   Button,
   Surface,
@@ -13,42 +11,45 @@ import {
 import * as Yup from 'yup';
 
 import { styles } from '@/lib';
-import { addCar } from '@/lib/api/mutations';
-import { Car } from '@/lib/types/Car';
+import { useCarStore } from '@/lib/api/store/carStore';
 import ArrowBack from '@/lib/ui/components/ArrowBack';
 
 export default function NewCar() {
   const [isSnackbarVisible, setIsSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
-  const queryClient = useQueryClient();
-  const { mutate, isPending, error } = useMutation({
-    mutationKey: ['cars'],
-    mutationFn: addCar,
-    onError: () => {
-      setIsSnackbarVisible(true);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cars'], exact: true });
-    },
-  });
+  const { addCar } = useCarStore();
 
   return (
     <Surface style={{ ...styles.screen, alignItems: undefined }}>
       <ArrowBack style={{ position: 'absolute', top: 16, left: 16 }} />
-      <Text variant="headlineLarge" style={{ textAlign: 'center' }}>
+      <Text variant="headlineMedium" style={{ textAlign: 'center' }}>
         Hi! Thank you for using our app!
       </Text>
-      <Text variant="bodyLarge" style={{ textAlign: 'center' }}>
+      <Text
+        variant="bodyLarge"
+        style={{ textAlign: 'center', paddingVertical: 16 }}
+      >
         Add your car here
       </Text>
       <Formik
         initialValues={{
           name: '',
           model: '',
-          plate_number: '',
+          plateNumber: '',
           year: new Date().getFullYear().toString(),
         }}
-        onSubmit={(values: Car) => mutate(values)}
+        onSubmit={(values, { resetForm }) => {
+          try {
+            addCar(values);
+            setSnackbarMessage('Car added successfully!');
+            resetForm();
+          } catch (error: unknown) {
+            console.error(error);
+            setSnackbarMessage('Failed to add car.');
+          }
+          setIsSnackbarVisible(true);
+        }}
         validationSchema={Yup.object().shape({
           name: Yup.string()
             .min(3, 'Too Short!')
@@ -58,7 +59,7 @@ export default function NewCar() {
             .min(2, 'Too Short! must be at least 8 characters.')
             .max(32, 'Too Long!')
             .required('Please enter car model'),
-          plate_number: Yup.string()
+          plateNumber: Yup.string()
             .min(4, 'Too Short! must be at least 4 characters.')
             .max(10, 'Too Long!')
             .required('Please enter car plate number'),
@@ -110,16 +111,16 @@ export default function NewCar() {
                 maxLength={10}
                 mode="outlined"
                 label="Plate Number"
-                value={values.plate_number}
-                error={!!errors.plate_number}
-                onBlur={handleBlur('plate_number')}
+                value={values.plateNumber}
+                error={!!errors.plateNumber}
+                onBlur={handleBlur('plateNumber')}
                 placeholder="Enter your plate number..."
                 onChangeText={(text) =>
-                  handleChange('plate_number')(text.toUpperCase())
+                  handleChange('plateNumber')(text.toUpperCase())
                 }
               />
-              <HelperText type="error" visible={!!errors.plate_number}>
-                {errors.plate_number}
+              <HelperText type="error" visible={!!errors.plateNumber}>
+                {errors.plateNumber}
               </HelperText>
             </Surface>
 
@@ -140,35 +141,24 @@ export default function NewCar() {
               </HelperText>
             </Surface>
 
-            <Button
-              mode="contained"
-              onPress={() => handleSubmit()}
-              loading={isPending}
-              disabled={isPending}
-            >
+            <Button mode="contained" onPress={() => handleSubmit()}>
               Add Car
             </Button>
           </>
         )}
       </Formik>
+
       {isSnackbarVisible && (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'space-between',
+        <Snackbar
+          visible
+          onDismiss={() => setIsSnackbarVisible(false)}
+          action={{
+            label: 'Close',
+            onPress: () => setIsSnackbarVisible(false),
           }}
         >
-          <Snackbar
-            visible
-            onDismiss={() => setIsSnackbarVisible(false)}
-            action={{
-              label: 'Close',
-              onPress: () => setIsSnackbarVisible(false),
-            }}
-          >
-            {error?.message}
-          </Snackbar>
-        </View>
+          {snackbarMessage}
+        </Snackbar>
       )}
     </Surface>
   );

@@ -1,8 +1,3 @@
-import {
-  useMutation,
-  useQueryClient,
-  useQuery,
-} from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
 import { Formik } from 'formik';
 import { useState } from 'react';
@@ -20,7 +15,6 @@ import { Dropdown } from 'react-native-paper-dropdown';
 import * as Yup from 'yup';
 
 import { styles, Locales } from '@/lib';
-import { updateCarActionById } from '@/lib/api/mutations';
 import { getAction } from '@/lib/api/queries';
 import { Action } from '@/lib/types/Car';
 import ArrowBack from '@/lib/ui/components/ArrowBack';
@@ -37,7 +31,6 @@ export default function EditAction() {
     error,
   } = useQuery({
     queryKey: ['car', actionId],
-    queryFn: () => getAction(actionId),
     enabled: !!actionId,
   });
 

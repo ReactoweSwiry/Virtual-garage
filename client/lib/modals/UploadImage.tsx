@@ -1,4 +1,3 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import { StyleSheet, View, Image, Text } from 'react-native';
@@ -10,27 +9,18 @@ import {
   Button,
 } from 'react-native-paper';
 
-import { uploadCarImage } from '../api/mutations';
+import { useCarStore } from '../api/store/carStore';
 import { Locales } from '../locales';
 
-export default function EditCarImage({ carId }: { carId: number }) {
+export default function UploadImage({ carId }: { carId: string }) {
   const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>(
     null
   );
   const [visible, setVisible] = useState(false);
+  const [error, setError] = useState('');
 
   const theme = useTheme();
-
-  const queryClient = useQueryClient();
-  const { mutate, isPending, error } = useMutation({
-    mutationKey: ['car', carId],
-    mutationFn: ({ carId, file }: { carId: number; file: File }) =>
-      uploadCarImage(carId, file),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['car'] });
-      queryClient.invalidateQueries({ queryKey: ['cars'] });
-    },
-  });
+  const { uploadImage } = useCarStore();
 
   const imagePicker = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -43,6 +33,10 @@ export default function EditCarImage({ carId }: { carId: number }) {
 
     if (!result.canceled) {
       setImage(result.assets[0]);
+    } else {
+      setError(
+        'Somehting went wrong, please try again or contact support'
+      );
     }
   };
 
@@ -77,10 +71,7 @@ export default function EditCarImage({ carId }: { carId: number }) {
               />
             )}
             {image && (
-              <Button
-                onPress={() => mutate({ carId, file: image.file as File })}
-                loading={isPending}
-              >
+              <Button onPress={() => uploadImage(carId, image.uri)}>
                 Upload
               </Button>
             )}
