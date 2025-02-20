@@ -1,6 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
 import React from 'react';
-import { Platform, useColorScheme } from 'react-native';
+import { Platform, useColorScheme, View } from 'react-native';
 import {
   Surface,
   List,
@@ -20,6 +20,7 @@ import {
   Locales,
   Setting,
 } from '@/lib';
+import SynchronizeData from '@/lib/modals/SynchronizeData';
 
 const Settings = () => {
   const colorScheme = useColorScheme();
@@ -276,38 +277,54 @@ const Settings = () => {
                 )}
               />
             </List.Accordion>
+            <List.Accordion
+              id="2"
+              title={Locales.t('synchronization')}
+              left={(props) => <List.Icon {...props} icon="sync" />}
+            >
+              <SynchronizeData />
+              <List.Item
+                title={Locales.t('fetchSynchronized')}
+                description={Locales.t('fetchSynchronizedDesc')}
+                left={(props) => <List.Icon {...props} icon="download" />}
+              />
+            </List.Accordion>
           </List.AccordionGroup>
         </Surface>
       )}
-      <Button
-        mode="contained"
-        style={{ margin: 16 }}
-        onPress={() =>
-          Platform.OS !== 'web'
-            ? SecureStore.setItemAsync(
-                'settings',
-                JSON.stringify(settings)
-              )
-                .then(() =>
-                  setMessage({
-                    visible: true,
-                    content: Locales.t('restartApp'),
-                  })
-                )
-                .catch((res) =>
-                  setMessage({
-                    visible: true,
-                    content: res.message,
-                  })
-                )
-            : setMessage({
-                visible: true,
-                content: Locales.t('notAvailable'),
-              })
-        }
+      <View
+        style={{ flex: 1, justifyContent: 'flex-end', marginBottom: 16 }}
       >
-        {Locales.t('save')}
-      </Button>
+        <Button
+          mode="contained"
+          style={{ margin: 16, position: 'relative' }}
+          onPress={() =>
+            Platform.OS !== 'web'
+              ? SecureStore.setItemAsync(
+                  'settings',
+                  JSON.stringify(settings)
+                )
+                  .then(() =>
+                    setMessage({
+                      visible: true,
+                      content: Locales.t('restartApp'),
+                    })
+                  )
+                  .catch((res) =>
+                    setMessage({
+                      visible: true,
+                      content: res.message,
+                    })
+                  )
+              : setMessage({
+                  visible: true,
+                  content: Locales.t('notAvailable'),
+                })
+          }
+        >
+          {Locales.t('save')}
+        </Button>
+      </View>
 
       <Snackbar
         visible={message.visible}

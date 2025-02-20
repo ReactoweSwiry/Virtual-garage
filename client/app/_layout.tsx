@@ -6,7 +6,6 @@ import {
   DefaultTheme as NavLightTheme,
   ThemeProvider,
 } from '@react-navigation/native';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import * as Localization from 'expo-localization';
 import { SplashScreen, Stack } from 'expo-router';
@@ -28,14 +27,6 @@ export const unstable_settings = { initialRouteName: '(tabs)' };
 SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-        staleTime: 5 * (60 * 1000), // Keep data in cache for 5 minutes
-      },
-    },
-  });
   const [loaded, error] = useFonts({
     NotoSans_400Regular,
     JetBrainsMono_400Regular,
@@ -57,11 +48,7 @@ const RootLayout = () => {
     return null;
   }
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      <RootLayoutNav />
-    </QueryClientProvider>
-  );
+  return <RootLayoutNav />;
 };
 
 const RootLayoutNav = () => {

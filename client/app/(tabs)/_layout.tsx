@@ -39,29 +39,6 @@ const TabLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="profile"
-        options={{
-          title: Locales.t('profile'),
-          headerRight: () => (
-            <>
-              <Tooltip title={Locales.t('search')}>
-                <Appbar.Action
-                  icon="magnify"
-                  onPress={() => router.push('/search')}
-                />
-              </Tooltip>
-            </>
-          ),
-          tabBarIcon: (props) => (
-            <MaterialCommunityIcons
-              {...props}
-              size={24}
-              name={props.focused ? 'account' : 'account-outline'}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="settings"
         options={{
           title: Locales.t('titleSettings'),
