@@ -42,44 +42,39 @@ export default function Garage() {
   useEffect(() => {
     if (Platform.OS !== 'web') {
       scheduleMultipleNotifications()
+      const fetchNotifications = async () => {
+        const notifications = await Notifications.getAllScheduledNotificationsAsync();
+        console.log(notifications)
+      };
+  
+      fetchNotifications();
     }
   }, []);
   async function scheduleMultipleNotifications() {
-    const now = new Date();
-    now.setSeconds(0);
+    const triggerDate = new Date();
+    triggerDate.setMinutes(triggerDate.getMinutes() + 1);
+    // await Notifications.cancelAllScheduledNotificationsAsync();
+    
+    console.log("Trigger Time:", triggerDate.toLocaleTimeString());
 
-    for (let i = 1; i <= 6; i++) { // Schedule 6 notifications (next 30 mins)
-      const trigger = new Date(now);
-      trigger.setMinutes(Math.ceil(trigger.getMinutes() / 5) * 5 + i * 5); // Next even 5-minute mark
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Scheduled Notification",
+        body: `This should trigger at: ${triggerDate.toLocaleTimeString()}`,
+      },
+      trigger: {
+        type: "date",
+        date: triggerDate, 
+      },
+    });
 
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: '🔔 Test Notification',
-          body: `Scheduled for ${trigger.toLocaleTimeString()}`,
-        },
-        trigger: { type: 'date', timestamp: trigger.getTime() },
-      });
+    console.log("Scheduling notification for:", triggerDate.toLocaleTimeString());
 
-      console.log(`Scheduled notification for: ${triggerTime.toLocaleTimeString()}`);
-    }
+    // Check all scheduled notifications
+    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+    console.log("Scheduled Notifications:", scheduled);
   }
-  // Schedule notification when data changes (only on mobile)
-  // useEffect(() => {
-  //   if (Platform.OS !== 'web' && data) {
-  //     const triggerDate = new Date();
-  //     triggerDate.setSeconds(triggerDate.getSeconds() + 10); // 10 seconds from now
 
-  //     Notifications.scheduleNotificationAsync({
-  //       content: {
-  //         title: 'Cars Loaded',
-  //         body: 'The car data has been successfully loaded!',
-  //       },
-  //       trigger: { date: triggerDate }, // Show notification at a specific date and time
-  //     });
-  //   }
-  // }, [data]);
-
-  // Early return for loading state
   if (isPending) {
     return (
       <View style={styles.center}>
