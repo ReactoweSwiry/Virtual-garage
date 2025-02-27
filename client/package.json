@@ -33,6 +33,7 @@
     "axios": "^1.7.9",
     "concurrently": "^9.1.2",
     "expo": "~52.0.35",
+    "expo-clipboard": "^7.0.1",
     "expo-constants": "~17.0.5",
     "expo-dev-client": "~5.0.12",
     "expo-dev-menu": "^6.0.19",

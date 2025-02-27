@@ -20,6 +20,7 @@ import {
   Locales,
   Setting,
 } from '@/lib';
+import FetchSynchronizedData from '@/lib/modals/FetchSynchronizedData';
 import SynchronizeData from '@/lib/modals/SynchronizeData';
 
 const Settings = () => {
@@ -283,11 +284,7 @@ const Settings = () => {
               left={(props) => <List.Icon {...props} icon="sync" />}
             >
               <SynchronizeData />
-              <List.Item
-                title={Locales.t('fetchSynchronized')}
-                description={Locales.t('fetchSynchronizedDesc')}
-                left={(props) => <List.Icon {...props} icon="download" />}
-              />
+              <FetchSynchronizedData />
             </List.Accordion>
           </List.AccordionGroup>
         </Surface>

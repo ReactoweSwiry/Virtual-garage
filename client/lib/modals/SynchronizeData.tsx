@@ -1,5 +1,8 @@
+import { Ionicons } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
+import { nanoid } from 'nanoid';
 import { useState } from 'react';
-import { StyleSheet, TextInput } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import {
   Modal,
   Portal,
@@ -8,15 +11,36 @@ import {
   Divider,
   List,
   useTheme,
+  IconButton,
+  Snackbar,
 } from 'react-native-paper';
 
 import { Locales } from '../locales';
 
 export default function SynchronizeData() {
   const [visible, setVisible] = useState(false);
-  const [inputValue, setInputValue] = useState('');
-
+  const [syncId, setSyncId] = useState('');
+  const [showSyncId, setShowSyncId] = useState(false);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
   const theme = useTheme();
+
+  const handleSync = () => {
+    const newSyncId = nanoid();
+    setSyncId(newSyncId);
+    setShowSyncId(true);
+    console.log(newSyncId);
+  };
+
+  const copyToClipboard = async () => {
+    await Clipboard.setStringAsync(syncId);
+    setSnackbarVisible(true);
+  };
+
+  const closeModal = () => {
+    setVisible(false);
+    setShowSyncId(false);
+    setSyncId('');
+  };
 
   return (
     <>
@@ -26,11 +50,10 @@ export default function SynchronizeData() {
         left={(props) => <List.Icon {...props} icon="cloud" />}
         onPress={() => setVisible(true)}
       />
-
       <Portal>
         <Modal
           visible={visible}
-          onDismiss={() => setVisible(false)}
+          onDismiss={closeModal}
           contentContainerStyle={[
             styles.modalContainer,
             { backgroundColor: theme.colors.surface },
@@ -39,27 +62,71 @@ export default function SynchronizeData() {
           <Text style={styles.modalTitle}>Synchronize Data</Text>
           <Divider style={styles.divider} />
 
-          <TextInput
-            style={[
-              styles.input,
-              {
-                color: theme.colors.secondary,
-                borderColor: theme.colors.backdrop,
-              },
-            ]}
-            placeholder="Enter name"
-            value={inputValue}
-            onChangeText={setInputValue}
-          />
+          {!showSyncId && (
+            <Button
+              mode="contained"
+              style={styles.syncButton}
+              onPress={handleSync}
+            >
+              Synchronize
+            </Button>
+          )}
 
-          <Button
-            mode="contained"
-            style={styles.syncButton}
-            onPress={() => {}}
-          >
-            Synchronize
-          </Button>
+          {showSyncId && (
+            <View style={styles.resultContainer}>
+              <View
+                style={[
+                  styles.syncIdBox,
+                  {
+                    borderColor: theme.colors.primary,
+                    backgroundColor: theme.colors.primaryContainer,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.syncIdText,
+                    { color: theme.colors.onPrimaryContainer },
+                  ]}
+                  selectable
+                >
+                  {syncId}
+                </Text>
+                <IconButton
+                  icon={() => (
+                    <Ionicons
+                      name="copy-outline"
+                      size={22}
+                      color={theme.colors.primary}
+                    />
+                  )}
+                  onPress={copyToClipboard}
+                  style={styles.copyButton}
+                />
+              </View>
+
+              <Button
+                mode="outlined"
+                style={styles.closeButton}
+                onPress={closeModal}
+              >
+                Close
+              </Button>
+            </View>
+          )}
         </Modal>
+        <Snackbar
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          duration={2000}
+          style={styles.snackbar}
+          action={{
+            label: 'Dismiss',
+            onPress: () => setSnackbarVisible(false),
+          }}
+        >
+          Sync ID copied to clipboard!
+        </Snackbar>
       </Portal>
     </>
   );
@@ -75,27 +142,41 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 10,
     textAlign: 'center',
   },
   divider: {
     marginVertical: 10,
   },
-  modalActions: {
+  resultContainer: {
+    width: '100%',
+    marginTop: 10,
+  },
+  syncIdBox: {
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    width: '100%',
   },
-  iconButton: {
-    marginHorizontal: 4,
+  syncIdText: {
+    fontSize: 16,
+    flex: 1,
+    marginRight: 4,
   },
-  input: {
-    borderWidth: 2,
-    borderRadius: 20,
-    padding: 10,
-    marginBottom: 10,
+  copyButton: {
+    margin: 0,
+  },
+  closeButton: {
+    marginTop: 20,
   },
   syncButton: {
-    marginBottom: 10,
+    marginVertical: 15,
+  },
+  snackbar: {
+    position: 'absolute',
+    bottom: 0,
+    marginBottom: 24,
   },
 });
